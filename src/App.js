@@ -30,6 +30,7 @@ function App (props) {
       return prevBody
     })
   }, [])
+
   /** Load all required data before component start. */
   useEffect(() => {
     async function asyncEffect () {
@@ -55,8 +56,21 @@ function App (props) {
           addToModal('Initializing wallet', appData)
           console.log(`Initializing wallet with back end server ${appData.serverUrl}`)
 
-          const walletTemp = await asyncLoad.initWallet(appData.serverUrl)
+          const walletTemp = await asyncLoad.initWallet(appData.serverUrl, appData.lsState.mnemonic, appData)
           appData.setWallet(walletTemp)
+          // appData.updateBchWalletState({ walletObj: walletTemp.walletInfo, appData })
+
+          // Get the BCH balance of the wallet.
+          addToModal('Getting BCH balance', appData)
+          await asyncLoad.getWalletBchBalance(walletTemp, appData.updateBchWalletState, appData)
+
+          // Get the SLP tokens held by the wallet.
+          addToModal('Getting SLP tokens', appData)
+          await asyncLoad.getSlpTokenBalances(walletTemp, appData.updateBchWalletState, appData)
+
+          // Get the BCH spot price
+          addToModal('Getting BCH spot price in USD', appData)
+          await asyncLoad.getUSDExchangeRate(walletTemp, appData.updateBchWalletState, appData)
 
           // Update state
           appData.setShowStartModal(false)

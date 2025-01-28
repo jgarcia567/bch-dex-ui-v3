@@ -40,6 +40,13 @@ function NavMenu (props) {
               href='#'
               onClick={(e) => handleClickEvent(1)}
             >
+              Wallet
+            </Nav.Link>
+            <Nav.Link
+              className={selectedMenu === 1 ? 'nav-link-active' : 'nav-link-inactive'}
+              href='#'
+              onClick={(e) => handleClickEvent(1)}
+            >
               Placeholder2
             </Nav.Link>
             <Nav.Link

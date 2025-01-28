@@ -11,6 +11,7 @@ import React from 'react'
 
 // Local libraries
 import GetBalance from './balance'
+import Wallet from './bch-wallet'
 import Placeholder2 from './placeholder2'
 import Placeholder3 from './placeholder3'
 import ServerSelectView from './servers/select-server-view'
@@ -28,11 +29,13 @@ function AppBody (props) {
       case 0:
         return (<GetBalance wallet={appData.wallet} />)
       case 1:
-        return (<Placeholder2 />)
+        return (<Wallet appData={appData} />)
       case 2:
+        return (<Placeholder2 />)
+      case 3:
         return (<Placeholder3 />)
 
-        // Special Views
+      // Special Views
       case 100:
         return (<ServerSelectView appData={appData} />)
       default:
