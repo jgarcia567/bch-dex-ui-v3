@@ -2,6 +2,7 @@
   "name": "bch-wallet-web3-spa",
   "version": "1.0.0",
   "dependencies": {
+    "@chris.troutner/react-jdenticon": "1.0.1",
     "@fortawesome/fontawesome-svg-core": "6.7.2",
     "@fortawesome/free-regular-svg-icons": "6.7.2",
     "@fortawesome/free-solid-svg-icons": "6.7.2",
