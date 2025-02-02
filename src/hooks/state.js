@@ -1,9 +1,15 @@
 import { useState } from 'react'
 import { useQueryParam, StringParam } from 'use-query-params'
+<<<<<<< HEAD
 import useLocalStorageState from 'use-local-storage-state'
 import AppUtil from '../util'
 
+=======
+import { useLocation } from 'react-router-dom'
+>>>>>>> upstream/master
 function useAppState () {
+  const location = useLocation()
+
   // Get the CashStack URL from query parameter or use default
   let [restURL] = useQueryParam('restURL', StringParam)
   if (!restURL) restURL = 'https://free-bch.fullstack.cash'
@@ -106,6 +112,7 @@ function useAppState () {
     setHideSpinner,
     denyClose,
     setDenyClose,
+<<<<<<< HEAD
     bchWalletState,
     setBchWalletState,
     lsState,
@@ -114,6 +121,10 @@ function useAppState () {
     updateLocalStorage,
     updateBchWalletState,
     appUtil: new AppUtil()
+=======
+    currentPath: location.pathname
+
+>>>>>>> upstream/master
   }
 }
 
