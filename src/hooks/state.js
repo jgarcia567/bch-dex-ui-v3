@@ -1,12 +1,9 @@
 import { useState } from 'react'
 import { useQueryParam, StringParam } from 'use-query-params'
-<<<<<<< HEAD
 import useLocalStorageState from 'use-local-storage-state'
 import AppUtil from '../util'
 
-=======
 import { useLocation } from 'react-router-dom'
->>>>>>> upstream/master
 function useAppState () {
   const location = useLocation()
 
@@ -112,7 +109,6 @@ function useAppState () {
     setHideSpinner,
     denyClose,
     setDenyClose,
-<<<<<<< HEAD
     bchWalletState,
     setBchWalletState,
     lsState,
@@ -120,11 +116,9 @@ function useAppState () {
     removeLocalStorageItem,
     updateLocalStorage,
     updateBchWalletState,
-    appUtil: new AppUtil()
-=======
+    appUtil: new AppUtil(),
     currentPath: location.pathname
 
->>>>>>> upstream/master
   }
 }
 

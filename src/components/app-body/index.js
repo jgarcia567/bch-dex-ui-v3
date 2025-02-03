@@ -21,38 +21,13 @@ import SelectServerButton from './servers/select-server-button'
 function AppBody (props) {
   // Dependency injection through props
   const appData = props.appData
-<<<<<<< HEAD
-  const menuState = props.menuState
-  // console.log('AppBody() menuState: ', menuState)
-
-  function chooseView (menuState) {
-    // console.log(`chooseView() menuState: ${menuState}`)
-
-    switch (menuState) {
-      case 0:
-        return (<GetBalance wallet={appData.wallet} />)
-      case 1:
-        return (<Wallet appData={appData} />)
-      case 2:
-        return (<Placeholder2 />)
-      case 3:
-        return (<Placeholder3 />)
-
-      // Special Views
-      case 100:
-        return (<ServerSelectView appData={appData} />)
-      default:
-        return (<GetBalance wallet={appData.wallet} />)
-    }
-  }
-=======
->>>>>>> upstream/master
 
   return (
     <>
       <Routes>
         <Route path='/' element={<GetBalance wallet={appData.wallet} />} />
         <Route path='/balance' element={<GetBalance wallet={appData.wallet} />} />
+        <Route path='/wallet' element={<Wallet appData={appData} />} />
         <Route path='/placeholder2' element={<Placeholder2 />} />
         <Route path='/placeholder3' element={<Placeholder3 />} />
         <Route path='/servers' element={<ServerSelectView appData={appData} />} />

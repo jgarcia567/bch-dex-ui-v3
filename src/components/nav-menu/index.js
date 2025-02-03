@@ -45,16 +45,16 @@ function NavMenu (props) {
               Check Balance
             </NavLink>
             <NavLink
-              className={currentPath === '/placeholder2' ? 'nav-link-active' : 'nav-link-inactive'}
-              to='/placeholder2'
+              className={currentPath === '/wallet' ? 'nav-link-active' : 'nav-link-inactive'}
+              to='/wallet'
               onClick={handleClickEvent}
 
             >
               Wallet
-            </Nav.Link>
-            <Nav.Link
-              className={selectedMenu === 1 ? 'nav-link-active' : 'nav-link-inactive'}
-              href='#'
+            </NavLink>
+            <NavLink
+              className={currentPath === '/Placeholder2' ? 'nav-link-active' : 'nav-link-inactive'}
+              to='/Placeholder2'
               onClick={(e) => handleClickEvent(1)}
             >
               Placeholder2
