@@ -1,15 +1,13 @@
-# bch-wallet-web3-spa
+# bch-dex-taker-v2
 
-This is a web-based single page app (SPA) written in React. It provides non-custodial wallet features for the Bitcoin Cash blockchain, including support for SLP tokens and NFTs.
+This is a web-based single page app (SPA) written in React. It is forked from [bch-wallet-web3-spa](https://github.com/Permissionless-Software-Foundation/bch-wallet-web3-spa) and replaces [bch-dex-taker-ui](https://github.com/Permissionless-Software-Foundation/bch-dex-taker-ui).
 
-The code repository is the successor to [bch-wallet-web-android](https://github.com/Permissionless-Software-Foundation/bch-wallet-web3-android). It is forked from [react-bootstrap-web3-spa](https://github.com/Permissionless-Software-Foundation/react-bootstrap-web3-spa), and any updates to that upstream repository are pulled into this repository. The individual wallet components from bch-wallet-web-android have been audited, refactored, and ported to this repository. It a complete rewrite of the original codebase.
-
-This code repository is intended to be a boilerplate for creating creative BCH-based web apps. It is built on top of the [Cash Stack](https://cashstack.info) web3 architecture, which provides a censorship-resistant back-end for accessing the Bitcoin Cash blockchain.
+The purpose of this app is to provide a web-based interface for users to browse NFT and fungible tokens for sale on the SLP DEX protocol. This provides a simple 1-click purchase functionality. A different UI is used for selling tokens, as there are more requirements for sellers imposed by the SWaP protocol.
 
 ## Installation
 ```bash
-git clone https://github.com/Permissionless-Software-Foundation/bch-wallet-web3-spa
-cd bch-wallet-web3-spa
+git clone https://github.com/Permissionless-Software-Foundation/bch-dex-taker-v2
+cd bch-dex-taker-v2
 npm install
 npm start
 npm run build
