@@ -45,6 +45,13 @@ function NavMenu (props) {
               Check Balance
             </NavLink>
             <NavLink
+              className={(currentPath === '/bch') ? 'nav-link-active' : 'nav-link-inactive'}
+              to='/bch'
+              onClick={handleClickEvent}
+            >
+              BCH
+            </NavLink>
+            <NavLink
               className={currentPath === '/wallet' ? 'nav-link-active' : 'nav-link-inactive'}
               to='/wallet'
               onClick={handleClickEvent}
