@@ -22,6 +22,9 @@ function NftsForSale (props) {
   const appData = props.appData
   console.log('NftsForSale() appData: ', appData)
 
+  // State
+  const [offers, setOffers] = useState([])
+
   async function getNftOffers(page = 0) {
     try {
       const options = {
@@ -66,16 +69,19 @@ function NftsForSale (props) {
   async function handleOffers() {
     let offers = await getNftOffers()
     console.log('offers: ', offers)
+
+    return offers
   }
 
   async function handleStartProcessingTokens() {
-    await handleOffers()
+    return await handleOffers()
   }
 
   // This is an async startup function that is called by the useEffect hook.
   const asyncStartup = async () => {
     try {
-      await handleStartProcessingTokens()
+      const offers = await handleStartProcessingTokens()
+      setOffers(offers)
     } catch (error) {
       console.error('NftsForSale() asyncStartup() error: ', error)
     }
@@ -84,13 +90,19 @@ function NftsForSale (props) {
   // Load NFT data when the page loads from the server or from the cache.
   useEffect(() => {
     asyncStartup()
-  }, [])
+  }, [offers])
 
   return (
     <Container>
       <Row>
         <Col>
           <h1>NFTs for Sale</h1>
+        </Col>
+
+        <Col xs={6}>
+          <Button variant='success' >
+            <FontAwesomeIcon icon={faRedo} size='lg' /> Refresh
+          </Button>
         </Col>
       </Row>
     </Container>
