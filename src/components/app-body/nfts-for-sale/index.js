@@ -13,7 +13,7 @@ import { faRedo } from '@fortawesome/free-solid-svg-icons'
 
 // Local libraries
 import config from '../../../config'
-
+import TokenCard from './token-card'
 // Global variables and constants
 const SERVER = config.dexServer
 
@@ -92,6 +92,31 @@ function NftsForSale (props) {
     asyncStartup()
   }, [offers])
 
+  // This function generates a Token Card for each token in the wallet.
+  function generateCards () {
+    // console.log('generateCards() offerData: ', offerData)
+
+    const tokens = offers
+
+    const tokenCards = []
+
+    for (let i = 0; i < tokens.length; i++) {
+      const thisToken = tokens[i]
+      // console.log(`thisToken: ${JSON.stringify(thisToken, null, 2)}`)
+
+      const thisTokenCard = (
+        <TokenCard
+          appData={appData}
+          token={thisToken}
+          key={`${thisToken.tokenId}`}
+        />
+      )
+      tokenCards.push(thisTokenCard)
+    }
+
+    return tokenCards
+  }
+
   return (
     <Container>
       <Row>
@@ -104,6 +129,10 @@ function NftsForSale (props) {
             <FontAwesomeIcon icon={faRedo} size='lg' /> Refresh
           </Button>
         </Col>
+      </Row>
+
+      <Row>
+        {generateCards()}
       </Row>
     </Container>
   )
