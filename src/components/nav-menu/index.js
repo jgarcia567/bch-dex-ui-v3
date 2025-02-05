@@ -38,12 +38,21 @@ function NavMenu (props) {
         <Navbar.Collapse id='responsive-navbar-nav'>
           <Nav className='mr-auto'>
             <NavLink
+              className={currentPath === '/nfts-for-sale' ? 'nav-link-active' : 'nav-link-inactive'}
+              to='/nfts-for-sale'
+              onClick={handleClickEvent}
+            >
+              NFTs for Sale
+            </NavLink>
+
+            <NavLink
               className={(currentPath === '/balance' || currentPath === '/') ? 'nav-link-active' : 'nav-link-inactive'}
               to='/balance'
               onClick={handleClickEvent}
             >
               Check Balance
             </NavLink>
+
             <NavLink
               className={currentPath === '/wallet' ? 'nav-link-active' : 'nav-link-inactive'}
               to='/wallet'
@@ -52,6 +61,7 @@ function NavMenu (props) {
             >
               Wallet
             </NavLink>
+            
             <NavLink
               className={currentPath === '/Placeholder2' ? 'nav-link-active' : 'nav-link-inactive'}
               to='/Placeholder2'
@@ -59,6 +69,7 @@ function NavMenu (props) {
             >
               Placeholder2
             </NavLink>
+            
             <NavLink
               className={currentPath === '/placeholder3' ? 'nav-link-active' : 'nav-link-inactive'}
               to='/placeholder3'
