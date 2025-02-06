@@ -123,7 +123,9 @@ function NftsForSale (props) {
         <Col>
           <h1>NFTs for Sale</h1>
         </Col>
+      </Row>
 
+      <Row>
         <Col xs={6}>
           <Button variant='success' >
             <FontAwesomeIcon icon={faRedo} size='lg' /> Refresh

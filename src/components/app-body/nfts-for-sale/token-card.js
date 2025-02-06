@@ -51,7 +51,9 @@ function TokenCard (props) {
               <br />
 
               <Row>
-                
+                <Col>
+                  <p>buttons here</p>
+                </Col>
               </Row>
 
             </Container>
