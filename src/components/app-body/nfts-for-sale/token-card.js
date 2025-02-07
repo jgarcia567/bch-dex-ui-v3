@@ -6,7 +6,7 @@
 import React from 'react'
 import { Container, Row, Col, Card } from 'react-bootstrap'
 // import BuyNftButton from './buy-button'
-// import InfoButton from './info-button'
+import InfoButton from './info-button'
 // import FlagButton from './flag-button'
 
 // Local libraries
@@ -23,6 +23,8 @@ function TokenCard (props) {
       imageLink = props.token.mutableData.fullSizedUrl
     }
   }
+
+  console.log('TokenCard props.token: ', props.token)
 
   return (
     <>
@@ -52,8 +54,12 @@ function TokenCard (props) {
 
               <Row>
                 <Col>
-                  <p>buttons here</p>
+                  <InfoButton token={props.token} />
                 </Col>
+
+                <Col></Col>
+
+                <Col></Col>
               </Row>
 
             </Container>
