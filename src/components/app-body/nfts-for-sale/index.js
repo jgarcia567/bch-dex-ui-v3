@@ -9,7 +9,7 @@ import axios from 'axios'
 import Jdenticon from '@chris.troutner/react-jdenticon'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faRedo } from '@fortawesome/free-solid-svg-icons'
-import BchDexLib from 'bch-dex-lib'
+// import BchDexLib from 'bch-dex-lib'
 // import RetryQueue from '@chris.troutner/retry-queue'
 
 // Local libraries
@@ -42,7 +42,7 @@ function NftsForSale (props) {
       const wallet = appData.wallet
 
       // Instantiate the BchDexLib object.
-      const dexLib = new BchDexLib({bchWallet: wallet, p2wdbRead: {}, p2wdbWrite: {}})
+      // const dexLib = new BchDexLib({bchWallet: wallet, p2wdbRead: {}, p2wdbWrite: {}})
 
       const offerDataCallback = (offer) => {
         console.log('offerDataCallback() offer: ', offer)
@@ -68,7 +68,15 @@ function NftsForSale (props) {
         thisOffer.usdPrice = priceStr
 
         // Download token data
-        await dexLib.tokenData.getTokenData(thisOffer, offerDataCallback)
+        // await dexLib.tokenData.getTokenData(thisOffer, offerDataCallback)
+        const tokenData = await wallet.getTokenData(thisOffer.tokenId)
+        console.log('complete tokenData: ', tokenData)
+
+        const mutableCid = tokenData.mutableData.slice(7)
+        const url1 = `https://free-bch.fullstack.cash/ipfs/file-info/${mutableCid}`
+        console.log('url1: ', url1)
+        const resp1 = await axios.get(url1)
+        console.log('resp1.data: ', resp1.data)
       }
 
       return rawOffers
