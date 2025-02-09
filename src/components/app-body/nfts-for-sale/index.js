@@ -78,8 +78,14 @@ function NftsForSale (props) {
         // const resp1 = await axios.get(url1)
         // console.log('resp1.data: ', resp1.data)
 
-        const mutableData = await wallet.cid2json({ cid: tokenData.mutableData })
-        console.log('mutableData: ', mutableData)
+        try {
+          const mutableCid = tokenData.mutableData.slice(7)
+          let mutableData = await wallet.cid2json({ cid: mutableCid })
+          mutableData = mutableData.json
+          console.log('mutableData: ', mutableData)
+        } catch(err) {
+          console.error(`Could not download mutable data for token ${thisOffer.tokenId}: ${err.message}`)
+        }
       }
 
       return rawOffers
