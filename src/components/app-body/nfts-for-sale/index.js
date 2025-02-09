@@ -72,11 +72,14 @@ function NftsForSale (props) {
         const tokenData = await wallet.getTokenData(thisOffer.tokenId)
         console.log('complete tokenData: ', tokenData)
 
-        const mutableCid = tokenData.mutableData.slice(7)
-        const url1 = `https://free-bch.fullstack.cash/ipfs/file-info/${mutableCid}`
-        console.log('url1: ', url1)
-        const resp1 = await axios.get(url1)
-        console.log('resp1.data: ', resp1.data)
+        // const mutableCid = tokenData.mutableData.slice(7)
+        // const url1 = `https://free-bch.fullstack.cash/ipfs/file-info/${mutableCid}`
+        // console.log('url1: ', url1)
+        // const resp1 = await axios.get(url1)
+        // console.log('resp1.data: ', resp1.data)
+
+        const mutableData = await wallet.cid2json({ cid: tokenData.mutableData })
+        console.log('mutableData: ', mutableData)
       }
 
       return rawOffers
