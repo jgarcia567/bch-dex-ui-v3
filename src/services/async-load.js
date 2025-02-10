@@ -4,7 +4,6 @@
 
 // Global npm libraries
 import axios from 'axios'
-
 // Local libraries
 import GistServers from './gist-servers'
 
@@ -111,13 +110,6 @@ class AsyncLoad {
       // Get token information from the wallet. This will also initialize the UTXO store.
       const slpTokens = await wallet.listTokens(wallet.walletInfo.cashAddress)
       // console.log('slpTokens: ', slpTokens)
-
-      // Add an icon property to each token.
-      slpTokens.map(x => {
-        x.icon = ''// (<Jdenticon size='100' value={x.tokenId} />)
-        x.iconNeedsDownload = true
-        return true
-      })
 
       console.log('slpTokens: ', slpTokens)
 

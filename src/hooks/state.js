@@ -4,6 +4,7 @@ import useLocalStorageState from 'use-local-storage-state'
 import AppUtil from '../util'
 
 import { useLocation } from 'react-router-dom'
+
 function useAppState () {
   const location = useLocation()
 
