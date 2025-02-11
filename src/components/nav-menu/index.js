@@ -70,9 +70,16 @@ function NavMenu (props) {
             </NavLink>
             
             <NavLink
+              className={currentPath === '/slp-tokens' ? 'nav-link-active' : 'nav-link-inactive'}
+              to='/slp-tokens'
+              onClick={handleClickEvent}
+            >
+              Tokens
+            </NavLink>
+            <NavLink
               className={currentPath === '/Placeholder2' ? 'nav-link-active' : 'nav-link-inactive'}
               to='/Placeholder2'
-              onClick={(e) => handleClickEvent(1)}
+              onClick={handleClickEvent}
             >
               Placeholder2
             </NavLink>
