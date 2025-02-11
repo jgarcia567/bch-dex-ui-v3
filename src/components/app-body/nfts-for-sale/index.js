@@ -80,9 +80,11 @@ function NftsForSale (props) {
 
         try {
           const mutableCid = tokenData.mutableData.slice(7)
+          console.log(`mutable CID for token ${thisOffer.tokenId}: ${mutableCid}`)
           let mutableData = await wallet.cid2json({ cid: mutableCid })
-          mutableData = mutableData.json
           console.log('mutableData: ', mutableData)
+          mutableData = mutableData.json
+
         } catch(err) {
           console.error(`Could not download mutable data for token ${thisOffer.tokenId}: ${err.message}`)
         }
