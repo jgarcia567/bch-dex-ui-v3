@@ -103,6 +103,16 @@ function SendTokenButton ({ token, appData, refreshTokens }) {
     }
   }
 
+  // Load address from clipboard
+  const pasteFromClipboard = async () => {
+    try {
+      const address = await appData.appUtil.readFromClipboard()
+      setSendToAddress(address)
+    } catch (err) {
+      console.warn('Error pasting from clipboard: ', err)
+    }
+  }
+
   // Modal JSX
   const getModal = () => {
     return (
@@ -135,9 +145,10 @@ function SendTokenButton ({ token, appData, refreshTokens }) {
 
               <Col xs={2}>
                 <FontAwesomeIcon
+                  style={{ cursor: 'pointer' }}
                   icon={faPaste}
                   size='lg'
-                  onClick={() => { /** paste from clipboard */ }}
+                  onClick={pasteFromClipboard}
                 />
               </Col>
             </Row>
