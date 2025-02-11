@@ -18,6 +18,7 @@ import Placeholder3 from './placeholder3'
 import ServerSelectView from './servers/select-server-view'
 import SelectServerButton from './servers/select-server-button'
 import BchSend from './bch-send'
+import SlpTokens from './slp-tokens'
 
 function AppBody (props) {
   // Dependency injection through props
@@ -30,6 +31,7 @@ function AppBody (props) {
         <Route path='/balance' element={<GetBalance wallet={appData.wallet} />} />
         <Route path='/bch' element={<BchSend appData={appData} />} />
         <Route path='/wallet' element={<Wallet appData={appData} />} />
+        <Route path='/slp-tokens' element={<SlpTokens appData={appData} />} />
         <Route path='/placeholder2' element={<Placeholder2 />} />
         <Route path='/placeholder3' element={<Placeholder3 />} />
         <Route path='/servers' element={<ServerSelectView appData={appData} />} />
