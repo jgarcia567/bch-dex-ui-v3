@@ -3,63 +3,70 @@
 */
 
 // Global npm libraries
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Container, Row, Col, Card } from 'react-bootstrap'
-// import BuyNftButton from './buy-button'
 import InfoButton from './info-button'
-// import FlagButton from './flag-button'
-
-// Local libraries
-// import InfoButton from './info-button'
-// import SendTokenButton from './send-token-button'
-// import SellButton from './sell-button'
+import Jdenticon from '@chris.troutner/react-jdenticon'
 
 function TokenCard (props) {
-  let imageLink = ''
-  if (props.token.mutableData) {
-    imageLink = props.token.mutableData.tokenIcon
+  const { token } = props
+  const [icon, setIcon] = useState(token.icon)
+  const [tokenData, setTokenData] = useState(token.tokenData)
 
-    if (props.token.mutableData.fullSizedUrl && props.token.mutableData.fullSizedUrl.includes('http')) {
-      imageLink = props.token.mutableData.fullSizedUrl
-    }
-  }
-
-  console.log('TokenCard props.token: ', props.token)
+  // Update icon state every token.icon and token.tokenData changes
+  useEffect(() => {
+    setIcon(token.icon)
+    setTokenData(token.tokenData)
+  }, [token.icon, token.tokenData])
 
   return (
     <>
       <Col xs={12} sm={6} lg={4} style={{ padding: '25px' }}>
         <Card>
           <Card.Body style={{ textAlign: 'center' }}>
-            <a href={imageLink} target='_blank' rel='noreferrer'>
-              {props.token.icon}
-            </a>
-            <Card.Title style={{ textAlign: 'center' }}>
-              <h4>{props.token.ticker}</h4>
+            {/** If the icon is loaded, display it */
+              icon && (
+                <Card.Img
+                  src={icon}
+                  style={{ height: '100px', width: 'auto' }}
+                  onError={(e) => {
+                    setIcon(null) // Set the icon to null if it fails to load the image url.
+                  }}
+                />
+              )
+            }
+
+            {/** If the icon is not loaded, display the Jdenticon   */
+              !icon && (
+                <Jdenticon size='100' value={token.tokenId} />
+              )
+            }
+            <Card.Title style={{ textAlign: 'center', marginTop: '10px' }}>
+              <h4>{token.ticker}</h4>
             </Card.Title>
 
             <Container>
               <Row>
                 <Col>
-                  {props.token.tokenData ? props.token.tokenData.tokenStats.name : null}
+                  {tokenData && tokenData.genesisData ? tokenData.genesisData.name : null}
                 </Col>
               </Row>
               <br />
 
               <Row>
                 <Col>Price:</Col>
-                <Col>{props.token.usdPrice}</Col>
+                <Col>{token.usdPrice}</Col>
               </Row>
               <br />
 
               <Row>
                 <Col>
-                  <InfoButton token={props.token} />
+                  <InfoButton token={token} disabled={!token.tokenData} />
                 </Col>
 
-                <Col></Col>
+                <Col />
 
-                <Col></Col>
+                <Col />
               </Row>
 
             </Container>
@@ -69,7 +76,7 @@ function TokenCard (props) {
     </>
   )
 }
-
+// eslint-disable-next-line
 {/* <Col>
                   <InfoButton token={props.token} />
                 </Col>
@@ -80,6 +87,6 @@ function TokenCard (props) {
 
                 <Col>
                   <BuyNftButton appData={props.appData} offer={props.token} />
-                </Col> */}
+                </Col> */ }
 
 export default TokenCard
