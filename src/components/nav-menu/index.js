@@ -68,7 +68,7 @@ function NavMenu (props) {
             >
               Wallet
             </NavLink>
-            
+
             <NavLink
               className={currentPath === '/slp-tokens' ? 'nav-link-active' : 'nav-link-inactive'}
               to='/slp-tokens'
@@ -83,7 +83,7 @@ function NavMenu (props) {
             >
               Placeholder2
             </NavLink>
-            
+
             <NavLink
               className={currentPath === '/placeholder3' ? 'nav-link-active' : 'nav-link-inactive'}
               to='/placeholder3'

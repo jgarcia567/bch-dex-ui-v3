@@ -23,8 +23,6 @@ function InfoButton (props) {
     setShow(true)
   }
 
-  console.log('props.token: ', props.token)
-
   // Replace with dummy button until token data is loaded.
   if (!props.token.tokenData) {
     return (
@@ -34,15 +32,9 @@ function InfoButton (props) {
     )
   }
 
-  // Convert the url property of the token to a link, if it matches common patterns.
-  // let url = props.token.tokenurl
-  // url = linkIfUrl(props.token.url)
-
-  // console.log('props.token: ', props.token)
-
   return (
     <>
-      <Button variant='info' onClick={handleOpen}>Info</Button>
+      <Button variant='info' disabled={props.disabled} onClick={handleOpen}>Info</Button>
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Token Information</Modal.Title>
@@ -56,7 +48,7 @@ function InfoButton (props) {
 
             <Row style={{ backgroundColor: '#eee' }}>
               <Col xs={4}><b>Name</b>:</Col>
-              <Col xs={8}>{props.token.tokenData.tokenStats.name}</Col>
+              <Col xs={8}>{props.token.tokenData.genesisData.name}</Col>
             </Row>
 
             <Row>
@@ -70,19 +62,14 @@ function InfoButton (props) {
 
             <Row style={{ backgroundColor: '#eee' }}>
               <Col xs={4}><b>Decimals</b>:</Col>
-              <Col xs={8}>{props.token.tokenData.tokenStats.decimals}</Col>
+              <Col xs={8}>{props.token.tokenData.genesisData.decimals}</Col>
             </Row>
 
             <Row>
               <Col xs={4}><b>Token Type</b>:</Col>
               <Col xs={8}>{props.token.tokenType}</Col>
             </Row>
-            {/*
-            <Row style={{ backgroundColor: '#eee', wordBreak: 'break-all' }}>
-              <Col xs={4}><b>URL</b>:</Col>
-              <Col xs={8}>{url}</Col>
-            </Row>
-            */}
+
           </Container>
         </Modal.Body>
         <Modal.Footer />
