@@ -4,8 +4,11 @@
 
 // Global npm libraries
 import axios from 'axios'
+import BchDexLib from 'bch-dex-lib'
+
 // Local libraries
 import GistServers from './gist-servers'
+import Nostr from './nostr'
 
 class AsyncLoad {
   constructor () {
@@ -193,6 +196,34 @@ class AsyncLoad {
       ]
 
       return defaultOptions
+    }
+  }
+
+  // Load the BchDexLib library.
+  async getDexLib (inObj = {}) {
+    try {
+      const { bchWallet } = inObj
+
+      const dexLib = new BchDexLib({bchWallet, p2wdbRead: {}, p2wdbWrite: {}})
+
+      return dexLib
+    } catch (error) {
+      console.error('Error getting DexLib', error)
+      throw error
+    }
+  }
+
+  // Load the Nostr library.
+  async getNostrLib (inObj = {}) {
+    try {
+      const { bchWallet } = inObj
+
+      const nostrLib = new Nostr({bchWallet})
+
+      return nostrLib
+    } catch (error) {
+      console.error('Error in getNostrLib', error)
+      throw error
     }
   }
 }

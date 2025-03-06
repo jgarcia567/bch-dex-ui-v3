@@ -1,8 +1,6 @@
 /*
-  This component renders as a button. When clicked, it opens a modal that
-  displays information about the token.
-
-  This is a functional component with as little state as possible.
+  This component renders as a button. When clicked, it initiates the
+  purchase of the token. This is the Signal part of the SWaP protocol.
 */
 
 // Global npm libraries

@@ -9,9 +9,11 @@ import InfoButton from './info-button'
 import Jdenticon from '@chris.troutner/react-jdenticon'
 
 function TokenCard (props) {
-  const { token } = props
+  const { token, appData } = props
   const [icon, setIcon] = useState(token.icon)
   const [tokenData, setTokenData] = useState(token.tokenData)
+
+  console.log('TokenCard() appData: ', appData)
 
   // Update icon state every token.icon and token.tokenData changes
   useEffect(() => {
