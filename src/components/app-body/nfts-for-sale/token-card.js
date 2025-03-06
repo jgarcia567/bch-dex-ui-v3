@@ -5,8 +5,11 @@
 // Global npm libraries
 import React, { useState, useEffect } from 'react'
 import { Container, Row, Col, Card } from 'react-bootstrap'
-import InfoButton from './info-button'
 import Jdenticon from '@chris.troutner/react-jdenticon'
+
+// Local libraries
+import InfoButton from './info-button'
+import BuyButton from './buy-button'
 
 function TokenCard (props) {
   const { token, appData } = props
@@ -68,7 +71,9 @@ function TokenCard (props) {
 
                 <Col />
 
-                <Col />
+                <Col>
+                  <BuyButton token={token} disabled={!token.tokenData} />
+                </Col>
               </Row>
 
             </Container>

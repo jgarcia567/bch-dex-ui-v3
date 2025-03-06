@@ -7,8 +7,12 @@
 import React, { useState } from 'react'
 import { Button, Modal, Container, Row, Col } from 'react-bootstrap'
 
-function InfoButton (props) {
+function BuyButton (props) {
   const [show, setShow] = useState(false)
+
+  const handleBuy = () => {
+    console.log('handleBuy()')
+  }
 
   const handleClose = () => {
     console.log('handleClose()')
@@ -25,14 +29,14 @@ function InfoButton (props) {
   if (!props.token.tokenData) {
     return (
       <>
-        <Button variant='info'>Info</Button>
+        <Button variant='success'>Buy</Button>
       </>
     )
   }
 
   return (
     <>
-      <Button variant='info' disabled={props.disabled} onClick={handleOpen}>Info</Button>
+      <Button variant='success' disabled={props.disabled} onClick={handleBuy}>Buy</Button>
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Token Information</Modal.Title>
@@ -76,4 +80,4 @@ function InfoButton (props) {
   )
 }
 
-export default InfoButton
+export default BuyButton

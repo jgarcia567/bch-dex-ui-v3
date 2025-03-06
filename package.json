@@ -52,6 +52,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "minimal-slp-wallet": "5.13.1",
     "react-app-rewired": "2.2.1",
     "standard": "17.0.0",
