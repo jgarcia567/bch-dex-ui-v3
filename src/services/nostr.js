@@ -4,10 +4,15 @@
 */
 
 // Global npm libraries
-import { finalizeEvent } from '@chris.troutner/nostr-tools/pure'
-import { Relay } from '@chris.troutner/nostr-tools/relay'
+// import { finalizeEvent } from '@chris.troutner/nostr-tools/pure'
+// import { Relay } from '@chris.troutner/nostr-tools/relay'
+// import BchNostr from 'bch-nostr'
+// import * as nip19 from '@chris.troutner/nostr-tools/nip19'
+
+import { finalizeEvent } from 'nostr-tools/pure'
+import { Relay } from 'nostr-tools/relay'
 import BchNostr from 'bch-nostr'
-import * as nip19 from '@chris.troutner/nostr-tools/nip19'
+import * as nip19 from 'nostr-tools/nip19'
 
 class NostrBrowser {
   constructor (localConfig = {}) {
@@ -77,7 +82,9 @@ class NostrBrowser {
       const eventId = signedEvent.id
 
       // Connect to a relay.
-      const relay = await Relay.connect(relayWs)
+      const relay = await Relay.connect(relayWs, {
+        webSocket: WebSocket
+      })
       // console.log(`connected to ${relay.url}`)
 
       // Publish the message to the relay.

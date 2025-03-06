@@ -72,7 +72,7 @@ function TokenCard (props) {
                 <Col />
 
                 <Col>
-                  <BuyButton token={token} disabled={!token.tokenData} />
+                  <BuyButton token={token} disabled={!token.tokenData} appData={appData} />
                 </Col>
               </Row>
 

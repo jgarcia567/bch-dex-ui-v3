@@ -8,10 +8,33 @@ import React, { useState } from 'react'
 import { Button, Modal, Container, Row, Col } from 'react-bootstrap'
 
 function BuyButton (props) {
+  const { token, appData } = props
+
   const [show, setShow] = useState(false)
 
-  const handleBuy = () => {
+  const handleBuy = async () => {
     console.log('handleBuy()')
+    console.log('token: ', token)
+    console.log('appData: ', appData)
+
+    const targetOffer = token.nostrEventId
+    console.log('targetOffer: ', targetOffer)
+
+    // TODO: Launch modal to let user know that the purchase is in progress.
+
+    // Generate a counter offer.
+    const bchDexLib = appData.dexLib
+    const { offerData, partialHex } = await bchDexLib.take.takeOffer(targetOffer)
+
+    console.log('offerData: ', offerData)
+    console.log('partialHex: ', partialHex)
+
+    // Upload the counter offer to Nostr.
+    const nostr = appData.nostr
+    const { eventId, noteId } = await nostr.testNostrUpload({ offerData, partialHex })
+
+    console.log(`Counter Offer uploaded to Nostr with this event ID: ${eventId}`)
+    console.log(`https://astral.psfoundation.info/${noteId}`)
   }
 
   const handleClose = () => {

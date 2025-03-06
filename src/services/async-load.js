@@ -9,6 +9,7 @@ import BchDexLib from 'bch-dex-lib'
 // Local libraries
 import GistServers from './gist-servers'
 import Nostr from './nostr'
+import P2WDB from 'p2wdb'
 
 class AsyncLoad {
   constructor () {
@@ -200,11 +201,11 @@ class AsyncLoad {
   }
 
   // Load the BchDexLib library.
-  async getDexLib (inObj = {}) {
+  getDexLib (inObj = {}) {
     try {
-      const { bchWallet } = inObj
+      const { bchWallet, p2wdbRead, p2wdbWrite } = inObj
 
-      const dexLib = new BchDexLib({bchWallet, p2wdbRead: {}, p2wdbWrite: {}})
+      const dexLib = new BchDexLib({bchWallet, p2wdbRead, p2wdbWrite})
 
       return dexLib
     } catch (error) {
@@ -214,7 +215,7 @@ class AsyncLoad {
   }
 
   // Load the Nostr library.
-  async getNostrLib (inObj = {}) {
+  getNostrLib (inObj = {}) {
     try {
       const { bchWallet } = inObj
 
@@ -226,7 +227,24 @@ class AsyncLoad {
       throw error
     }
   }
+
+  // Load the P2WDB library.
+  getP2WDBLib (inObj = {}) {
+    try {
+      const { bchWallet } = inObj
+
+      const p2wdbRead = new P2WDB.Read()
+      const p2wdbWrite = new P2WDB.Write({bchWallet})
+
+      return {p2wdbRead, p2wdbWrite}
+    } catch (error) {
+      console.error('Error in getP2WDBLib', error)
+      throw error
+    }
+  }
 }
+
+
 
 function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
