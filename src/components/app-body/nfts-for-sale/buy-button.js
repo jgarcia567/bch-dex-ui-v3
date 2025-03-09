@@ -1,16 +1,41 @@
 /*
-  This component renders as a button. When clicked, it opens a modal that
-  displays information about the token.
-
-  This is a functional component with as little state as possible.
+  This component renders as a button. When clicked, it initiates the
+  purchase of the token. This is the Signal part of the SWaP protocol.
 */
 
 // Global npm libraries
 import React, { useState } from 'react'
 import { Button, Modal, Container, Row, Col } from 'react-bootstrap'
 
-function InfoButton (props) {
+function BuyButton (props) {
+  const { token, appData } = props
+
   const [show, setShow] = useState(false)
+
+  const handleBuy = async () => {
+    console.log('handleBuy()')
+    console.log('token: ', token)
+    console.log('appData: ', appData)
+
+    const targetOffer = token.nostrEventId
+    console.log('targetOffer: ', targetOffer)
+
+    // TODO: Launch modal to let user know that the purchase is in progress.
+
+    // Generate a counter offer.
+    const bchDexLib = appData.dexLib
+    const { offerData, partialHex } = await bchDexLib.take.takeOffer(targetOffer)
+
+    console.log('offerData: ', offerData)
+    console.log('partialHex: ', partialHex)
+
+    // Upload the counter offer to Nostr.
+    const nostr = appData.nostr
+    const { eventId, noteId } = await nostr.testNostrUpload({ offerData, partialHex })
+
+    console.log(`Counter Offer uploaded to Nostr with this event ID: ${eventId}`)
+    console.log(`https://astral.psfoundation.info/${noteId}`)
+  }
 
   const handleClose = () => {
     console.log('handleClose()')
@@ -27,14 +52,14 @@ function InfoButton (props) {
   if (!props.token.tokenData) {
     return (
       <>
-        <Button variant='info'>Info</Button>
+        <Button variant='success'>Buy</Button>
       </>
     )
   }
 
   return (
     <>
-      <Button variant='info' disabled={props.disabled} onClick={handleOpen}>Info</Button>
+      <Button variant='success' disabled={props.disabled} onClick={handleBuy}>Buy</Button>
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Token Information</Modal.Title>
@@ -78,4 +103,4 @@ function InfoButton (props) {
   )
 }
 
-export default InfoButton
+export default BuyButton

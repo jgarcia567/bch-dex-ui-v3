@@ -71,6 +71,20 @@ function App (props) {
           addToModal('Getting BCH spot price in USD', appData)
           await asyncLoad.getUSDExchangeRate(walletTemp, appData.updateBchWalletState, appData)
 
+          // Load the P2WDB libraries.
+          addToModal('Loading P2WDB Libraries', appData)
+          const {p2wdbRead, p2wdbWrite} = asyncLoad.getP2WDBLib({bchWallet: walletTemp})
+
+          // Load the DEX library.
+          addToModal('Loading DEX Library', appData)
+          const dexLib = asyncLoad.getDexLib({bchWallet: walletTemp, p2wdbRead, p2wdbWrite})
+          appData.setDexLib(dexLib)
+
+          // Load the Nostr library.
+          addToModal('Loading Nostr Library', appData)
+          const nostrLib = asyncLoad.getNostrLib({bchWallet: walletTemp})
+          appData.setNostr(nostrLib)
+
           // Update state
           appData.setShowStartModal(false)
           appData.setDenyClose(false)

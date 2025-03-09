@@ -23,6 +23,8 @@ function useAppState () {
   const [menuState, setMenuState] = useState(0)
   const [wallet, setWallet] = useState(false)
   const [servers, setServers] = useState([])
+  const [dexLib, setDexLib] = useState(false)
+  const [nostr, setNostr] = useState(false)
 
   // Startup state management
   const [asyncInitStarted, setAsyncInitStarted] = useState(false)
@@ -125,8 +127,11 @@ function useAppState () {
     updateLocalStorage,
     updateBchWalletState,
     appUtil: new AppUtil(),
-    currentPath: location.pathname
-
+    currentPath: location.pathname,
+    dexLib,
+    setDexLib,
+    nostr,
+    setNostr
   }
 }
 
