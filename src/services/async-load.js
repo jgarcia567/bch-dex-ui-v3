@@ -205,7 +205,7 @@ class AsyncLoad {
     try {
       const { bchWallet, p2wdbRead, p2wdbWrite } = inObj
 
-      const dexLib = new BchDexLib({bchWallet, p2wdbRead, p2wdbWrite})
+      const dexLib = new BchDexLib({ bchWallet, p2wdbRead, p2wdbWrite })
 
       return dexLib
     } catch (error) {
@@ -219,7 +219,7 @@ class AsyncLoad {
     try {
       const { bchWallet } = inObj
 
-      const nostrLib = new Nostr({bchWallet})
+      const nostrLib = new Nostr({ bchWallet })
 
       return nostrLib
     } catch (error) {
@@ -234,17 +234,15 @@ class AsyncLoad {
       const { bchWallet } = inObj
 
       const p2wdbRead = new P2WDB.Read()
-      const p2wdbWrite = new P2WDB.Write({bchWallet})
+      const p2wdbWrite = new P2WDB.Write({ bchWallet })
 
-      return {p2wdbRead, p2wdbWrite}
+      return { p2wdbRead, p2wdbWrite }
     } catch (error) {
       console.error('Error in getP2WDBLib', error)
       throw error
     }
   }
 }
-
-
 
 function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))

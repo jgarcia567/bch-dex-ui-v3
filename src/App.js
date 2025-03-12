@@ -73,16 +73,16 @@ function App (props) {
 
           // Load the P2WDB libraries.
           addToModal('Loading P2WDB Libraries', appData)
-          const {p2wdbRead, p2wdbWrite} = asyncLoad.getP2WDBLib({bchWallet: walletTemp})
+          const { p2wdbRead, p2wdbWrite } = asyncLoad.getP2WDBLib({ bchWallet: walletTemp })
 
           // Load the DEX library.
           addToModal('Loading DEX Library', appData)
-          const dexLib = asyncLoad.getDexLib({bchWallet: walletTemp, p2wdbRead, p2wdbWrite})
+          const dexLib = asyncLoad.getDexLib({ bchWallet: walletTemp, p2wdbRead, p2wdbWrite })
           appData.setDexLib(dexLib)
 
           // Load the Nostr library.
           addToModal('Loading Nostr Library', appData)
-          const nostrLib = asyncLoad.getNostrLib({bchWallet: walletTemp})
+          const nostrLib = asyncLoad.getNostrLib({ bchWallet: walletTemp })
           appData.setNostr(nostrLib)
 
           // Update state
