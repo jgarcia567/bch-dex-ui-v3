@@ -12,7 +12,7 @@ import InfoButton from './info-button'
 import BuyButton from './buy-button'
 
 function TokenCard (props) {
-  const { token, appData } = props
+  const { token, appData, handleRefresh } = props
   const [icon, setIcon] = useState(token.icon)
   const [tokenData, setTokenData] = useState(token.tokenData)
 
@@ -72,7 +72,7 @@ function TokenCard (props) {
                 <Col />
 
                 <Col>
-                  <BuyButton token={token} disabled={!token.tokenData} appData={appData} />
+                  <BuyButton token={token} disabled={!token.tokenData} appData={appData} onSuccess={handleRefresh} />
                 </Col>
               </Row>
 

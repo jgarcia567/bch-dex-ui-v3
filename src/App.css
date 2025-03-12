@@ -36,6 +36,11 @@
   cursor: pointer;
 }
 
+.buy-modal {
+  top: 30%!important;
+  width: auto!important;
+}
+
 
 /* Remove input number arrows Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,

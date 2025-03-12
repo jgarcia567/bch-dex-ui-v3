@@ -205,7 +205,7 @@ function NftsForSale (props) {
     }
     return url
   }
-  
+
   // This function generates a Token Card for each token in the wallet.
   function generateCards (offers) {
     console.log('generateCards() offerData: ', offers)
@@ -221,6 +221,7 @@ function NftsForSale (props) {
         <TokenCard
           appData={appData}
           token={thisToken}
+          handleRefresh={handleRefresh}
           key={`${thisToken.tokenId + i}`}
         />
       )
