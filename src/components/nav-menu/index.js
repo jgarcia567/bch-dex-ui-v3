@@ -37,20 +37,15 @@ function NavMenu (props) {
         <Navbar.Toggle aria-controls='responsive-navbar-nav' />
         <Navbar.Collapse id='responsive-navbar-nav'>
           <Nav className='mr-auto'>
+
             <NavLink
-              className={(currentPath === '/balance' || currentPath === '/') ? 'nav-link-active' : 'nav-link-inactive'}
-              to='/balance'
-              onClick={handleClickEvent}
-            >
-              Check Balance
-            </NavLink>
-            <NavLink
-              className={(currentPath === '/bch') ? 'nav-link-active' : 'nav-link-inactive'}
+              className={(currentPath === '/bch' || currentPath === '/') ? 'nav-link-active' : 'nav-link-inactive'}
               to='/bch'
               onClick={handleClickEvent}
             >
               BCH
             </NavLink>
+
             <NavLink
               className={currentPath === '/wallet' ? 'nav-link-active' : 'nav-link-inactive'}
               to='/wallet'
@@ -59,6 +54,7 @@ function NavMenu (props) {
             >
               Wallet
             </NavLink>
+
             <NavLink
               className={currentPath === '/slp-tokens' ? 'nav-link-active' : 'nav-link-inactive'}
               to='/slp-tokens'
@@ -66,19 +62,13 @@ function NavMenu (props) {
             >
               Tokens
             </NavLink>
+
             <NavLink
-              className={currentPath === '/Placeholder2' ? 'nav-link-active' : 'nav-link-inactive'}
-              to='/Placeholder2'
+              className={(currentPath === '/balance') ? 'nav-link-active' : 'nav-link-inactive'}
+              to='/balance'
               onClick={handleClickEvent}
             >
-              Placeholder2
-            </NavLink>
-            <NavLink
-              className={currentPath === '/placeholder3' ? 'nav-link-active' : 'nav-link-inactive'}
-              to='/placeholder3'
-              onClick={handleClickEvent}
-            >
-              Placeholder 3
+              Check Balance
             </NavLink>
           </Nav>
         </Navbar.Collapse>
