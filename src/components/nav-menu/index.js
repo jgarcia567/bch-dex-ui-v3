@@ -47,20 +47,20 @@ function NavMenu (props) {
             </NavLink>
 
             <NavLink
+              className={currentPath === '/slp-tokens' ? 'nav-link-active' : 'nav-link-inactive'}
+              to='/slp-tokens'
+              onClick={handleClickEvent}
+            >
+              Tokens
+            </NavLink>
+
+            <NavLink
               className={currentPath === '/wallet' ? 'nav-link-active' : 'nav-link-inactive'}
               to='/wallet'
               onClick={handleClickEvent}
 
             >
               Wallet
-            </NavLink>
-
-            <NavLink
-              className={currentPath === '/slp-tokens' ? 'nav-link-active' : 'nav-link-inactive'}
-              to='/slp-tokens'
-              onClick={handleClickEvent}
-            >
-              Tokens
             </NavLink>
 
             <NavLink
