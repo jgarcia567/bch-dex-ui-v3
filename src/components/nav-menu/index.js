@@ -37,20 +37,13 @@ function NavMenu (props) {
         <Navbar.Toggle aria-controls='responsive-navbar-nav' />
         <Navbar.Collapse id='responsive-navbar-nav'>
           <Nav className='mr-auto'>
+
             <NavLink
-              className={currentPath === '/nfts-for-sale' ? 'nav-link-active' : 'nav-link-inactive'}
+              className={(currentPath === '/nfts-for-sale' || currentPath === '/') ? 'nav-link-active' : 'nav-link-inactive'}
               to='/nfts-for-sale'
               onClick={handleClickEvent}
             >
               NFTs for Sale
-            </NavLink>
-
-            <NavLink
-              className={(currentPath === '/balance' || currentPath === '/') ? 'nav-link-active' : 'nav-link-inactive'}
-              to='/balance'
-              onClick={handleClickEvent}
-            >
-              Check Balance
             </NavLink>
 
             <NavLink
@@ -60,6 +53,15 @@ function NavMenu (props) {
             >
               BCH
             </NavLink>
+
+            <NavLink
+              className={currentPath === '/slp-tokens' ? 'nav-link-active' : 'nav-link-inactive'}
+              to='/slp-tokens'
+              onClick={handleClickEvent}
+            >
+              Tokens
+            </NavLink>
+
             <NavLink
               className={currentPath === '/wallet' ? 'nav-link-active' : 'nav-link-inactive'}
               to='/wallet'
@@ -70,27 +72,13 @@ function NavMenu (props) {
             </NavLink>
 
             <NavLink
-              className={currentPath === '/slp-tokens' ? 'nav-link-active' : 'nav-link-inactive'}
-              to='/slp-tokens'
+              className={(currentPath === '/balance') ? 'nav-link-active' : 'nav-link-inactive'}
+              to='/balance'
               onClick={handleClickEvent}
             >
-              Tokens
+              Check Balance
             </NavLink>
-            <NavLink
-              className={currentPath === '/Placeholder2' ? 'nav-link-active' : 'nav-link-inactive'}
-              to='/Placeholder2'
-              onClick={handleClickEvent}
-            >
-              Placeholder2
-            </NavLink>
-
-            <NavLink
-              className={currentPath === '/placeholder3' ? 'nav-link-active' : 'nav-link-inactive'}
-              to='/placeholder3'
-              onClick={handleClickEvent}
-            >
-              Placeholder 3
-            </NavLink>
+            
           </Nav>
         </Navbar.Collapse>
       </Navbar>
