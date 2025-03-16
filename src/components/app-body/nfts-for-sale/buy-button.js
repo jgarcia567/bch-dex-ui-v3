@@ -17,7 +17,9 @@ function BuyButton (props) {
   const [noteId, setNoteId] = useState(false) // show the note id
   const [success, setSuccess] = useState(false) // show the success message
   const [showConfirmation, setShowConfirmation] = useState(true) // show the confirmation view
+  const [progressMsg, setProgressMsg] = useState([]) // show the progress message
 
+  // Handler for when user clicks the "Buy" button.
   const handleBuy = async () => {
     try {
       console.log('handleBuy()')
@@ -33,6 +35,11 @@ function BuyButton (props) {
              setOnFetch(false)
              return
          */
+
+      const progress = progressMsg
+      progress.push(<p key='progress-msg1'>Generating counter offer transaction...</p>)
+      setProgressMsg(progress)
+
       const targetOffer = token.nostrEventId
       console.log('targetOffer: ', targetOffer)
 
@@ -41,6 +48,9 @@ function BuyButton (props) {
       const { offerData, partialHex } = await bchDexLib.take.takeOffer(
         targetOffer
       )
+
+      progress.push(<p key='progress-msg2'>Uploading counter offer to Nostr...</p>)
+      setProgressMsg(progress)
 
       console.log('offerData: ', offerData)
       console.log('partialHex: ', partialHex)
@@ -66,6 +76,7 @@ function BuyButton (props) {
     }
   }
 
+  // Handler for when user requests to close the modal.
   const handleClose = () => {
     console.log('handleClose()')
     // Deny close if the purchase is in progress.
@@ -105,6 +116,7 @@ function BuyButton (props) {
       >
         Buy
       </Button>
+
       <Modal show={show} onHide={handleClose} dialogClassName='buy-modal'>
         <Modal.Header closeButton>
           <Modal.Title>
@@ -117,7 +129,9 @@ function BuyButton (props) {
                 )}
           </Modal.Title>
         </Modal.Header>
+
         <Modal.Body className='text-center'>
+
           {/** If the purchase is not confirmed, display the token details. and confirm button. */}
           {showConfirmation && (
             <Container className='text-start'>
@@ -147,7 +161,13 @@ function BuyButton (props) {
 
           {/** show purchase progress */}
           <Container style={{ wordBreak: 'break-word' }}>
-            {onFetch && <Spinner animation='border' variant='primary' />}
+            {onFetch && (
+              <>
+                <Spinner animation='border' variant='primary' />
+                {progressMsg}
+              </>
+            )}
+
             {error && (
               <span style={{ color: 'red', fontStyle: 'italic' }}>{error}</span>
             )}
@@ -165,10 +185,18 @@ function BuyButton (props) {
                     {noteId}
                   </a>
                 </p>
+                <p>
+                  What happens now:<br />
+                  The Seller software must finalize the sale by accepting the Counter Offer transaction you just generated.
+                  If their software is online, the token should appear in your wallet within a few minutes.
+                  Before it is accepted, you can cancel the purchase by Sweeping your Counter Offer UXTO back to your wallet.
+                </p>
               </>
             )}
           </Container>
+
         </Modal.Body>
+
         <Modal.Footer className='text-center'>
           {showConfirmation && (
             <Row style={{ width: '100%' }}>
