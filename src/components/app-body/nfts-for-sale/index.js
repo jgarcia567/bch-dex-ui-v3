@@ -243,7 +243,7 @@ function NftsForSale (props) {
           {/** Show spinner info if tokens are loaded but data is not loaded */
             offersAreLoaded && !dataAreLoaded && (
               <div style={{ borderRadius: '10px', backgroundColor: '#f0f0f0', padding: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', width: 'fit-content' }}>
-                <span style={{ marginRight: '10px' }}>Loading Tokens Data </span>
+                <span style={{ marginRight: '10px' }}>Loading Token Data </span>
                 <Spinner animation='border' />
               </div>
             )
@@ -251,7 +251,7 @@ function NftsForSale (props) {
           {/** Show spinner info if tokens are loaded but icons are not loaded */
             dataAreLoaded && !iconsAreLoaded && (
               <div style={{ borderRadius: '10px', backgroundColor: '#f0f0f0', padding: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', width: 'fit-content' }}>
-                <span style={{ marginRight: '10px' }}>Loading Tokens Icons </span>
+                <span style={{ marginRight: '10px' }}>Loading Token Icons </span>
                 <Spinner animation='border' />
               </div>
             )

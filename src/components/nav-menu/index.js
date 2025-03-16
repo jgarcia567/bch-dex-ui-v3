@@ -78,7 +78,7 @@ function NavMenu (props) {
             >
               Check Balance
             </NavLink>
-            
+
           </Nav>
         </Navbar.Collapse>
       </Navbar>
