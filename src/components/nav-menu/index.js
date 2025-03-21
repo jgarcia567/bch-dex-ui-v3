@@ -70,6 +70,13 @@ function NavMenu (props) {
             >
               Check Balance
             </NavLink>
+            <NavLink
+              className={(currentPath === '/sweep') ? 'nav-link-active' : 'nav-link-inactive'}
+              to='/sweep'
+              onClick={handleClickEvent}
+            >
+              Sweep
+            </NavLink>
           </Nav>
         </Navbar.Collapse>
       </Navbar>
