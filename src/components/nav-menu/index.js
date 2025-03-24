@@ -77,6 +77,13 @@ function NavMenu (props) {
             >
               Sweep
             </NavLink>
+            <NavLink
+              className={(currentPath === '/sign') ? 'nav-link-active' : 'nav-link-inactive'}
+              to='/sign'
+              onClick={handleClickEvent}
+            >
+              Sign
+            </NavLink>
           </Nav>
         </Navbar.Collapse>
       </Navbar>
