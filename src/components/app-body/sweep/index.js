@@ -40,7 +40,8 @@ const SweepWif = (props) => {
   }
 
   // Handle sweep function
-  const handleSweep = async () => {
+  const handleSweep = async (e) => {
+    e.preventDefault()
     try {
       console.log(`Sweeping this WIF: ${wifToSweep}`)
 
@@ -157,7 +158,7 @@ const SweepWif = (props) => {
 
         <Row>
           <Col>
-            <Form>
+            <Form onSubmit={handleSweep}>
               <Form.Group controlId='formWif' style={{ textAlign: 'center' }}>
                 <Form.Control
                   type='text'
