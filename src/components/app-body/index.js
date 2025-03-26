@@ -20,6 +20,7 @@ import SelectServerButton from './servers/select-server-button'
 import BchSend from './bch-send'
 import SlpTokens from './slp-tokens'
 import SweepWif from './sweep/index.js'
+import SignMessage from './sign/index.js'
 
 function AppBody (props) {
   // Dependency injection through props
@@ -37,6 +38,7 @@ function AppBody (props) {
         <Route path='/placeholder3' element={<Placeholder3 />} />
         <Route path='/servers' element={<ServerSelectView appData={appData} />} />
         <Route path='/sweep' element={<SweepWif appData={appData} />} />
+        <Route path='/sign' element={<SignMessage appData={appData} />} />
       </Routes>
       {/** Show in all paths except the servers view */}
       {appData.currentPath !== '/servers' && <SelectServerButton linkTo='/servers' appData={appData} />}
