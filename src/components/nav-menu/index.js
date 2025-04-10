@@ -31,7 +31,7 @@ function NavMenu (props) {
       <Navbar expanded={expanded} onToggle={setExpanded} expand='xxxl' bg='dark' variant='dark' style={{ paddingRight: '20px' }}>
         <Navbar.Brand href='#home' style={{ paddingLeft: '20px' }}>
           <Image src={Logo} thumbnail width='50' />{' '}
-          PSF Web3 Demo
+          SLP Wallet
         </Navbar.Brand>
 
         <Navbar.Toggle aria-controls='responsive-navbar-nav' />
