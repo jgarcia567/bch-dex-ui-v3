@@ -83,6 +83,7 @@ class NostrBrowser {
 
       // Connect to a relay.
       const relay = await Relay.connect(relayWs, {
+        /* global WebSocket */
         webSocket: WebSocket
       })
       // console.log(`connected to ${relay.url}`)
