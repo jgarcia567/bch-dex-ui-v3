@@ -1,3 +1,5 @@
+// This file adds polyfills to allow the web app to work with Nostr
+
 const webpack = require('webpack')
 
 module.exports = function override (config) {
