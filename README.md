@@ -2,7 +2,7 @@
 
 This is a web-based single page app (SPA) written in React. It is forked from [bch-wallet-web3-spa](https://github.com/Permissionless-Software-Foundation/bch-wallet-web3-spa) and replaces [bch-dex-taker-ui](https://github.com/Permissionless-Software-Foundation/bch-dex-taker-ui).
 
-The purpose of this app is to provide a web-based interface for users to browse NFT and fungible tokens for sale on the SLP DEX protocol. This provides a simple 1-click purchase functionality. A different UI is used for selling tokens, as there are more requirements for sellers imposed by the SWaP protocol.
+The purpose of this app is to provide a web-based interface for users to browse NFT and fungible tokens for sale on the SLP DEX protocol. This provides a simple 1-click purchase functionality. A different UI ([bch-dex-ui-v3](https://github.com/Permissionless-Software-Foundation/bch-dex-ui-v3)) is used for selling tokens, as there are more requirements for sellers imposed by the SWaP protocol.
 
 ## Installation
 ```bash
