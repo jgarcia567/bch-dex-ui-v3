@@ -104,7 +104,7 @@ const SweepWif = (props) => {
 
   const handleCancelCounterOffers = async () => {
     try {
-      console.log(`Executing handleCancelCounterOffers()`)
+      console.log('Executing handleCancelCounterOffers()')
 
       // Set modal initial state
       // setShowModal(true)
@@ -119,8 +119,6 @@ const SweepWif = (props) => {
 
       // Sweep the private key holding the Counter Offer UTXOs.
       setWifToSweep(wif)
-      
-
 
       await handleSweep()
     } catch (err) {
@@ -211,23 +209,23 @@ const SweepWif = (props) => {
         <hr />
 
         <Row>
-            <Col>
-              <p>
-                When a Buy order is created, the coins (UTXO) to pay for it are
-                moved to a secondary address. Clicking the button below will
-                sweep those funds back into this main wallet. This will also
-                cancel/invalidate all open Counter Offers that you've created.
-              </p>
-            </Col>
-          </Row>
+          <Col>
+            <p>
+              When a Buy order is created, the coins (UTXO) to pay for it are
+              moved to a secondary address. Clicking the button below will
+              sweep those funds back into this main wallet. This will also
+              cancel/invalidate all open Counter Offers that you've created.
+            </p>
+          </Col>
+        </Row>
 
-          <Row style={{ textAlign: 'center' }}>
-            <Col>
-              <Button onClick={handleCancelCounterOffers}>
-                Sweep DEX Trading Wallet
-              </Button>
-            </Col>
-          </Row>
+        <Row style={{ textAlign: 'center' }}>
+          <Col>
+            <Button onClick={handleCancelCounterOffers}>
+              Sweep DEX Trading Wallet
+            </Button>
+          </Col>
+        </Row>
       </Container>
       {showModal && getModal()}
     </>
