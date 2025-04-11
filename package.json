@@ -32,7 +32,7 @@
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
-    "test": "react-app-rewired test",
+    "test": "npm run lint",
     "eject": "react-app-rewired eject",
     "lint": "standard --env mocha --fix",
     "pub": "node deploy/publish-main.js",
@@ -55,9 +55,24 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "husky": "9.1.7",
     "minimal-slp-wallet": "5.13.1",
     "react-app-rewired": "2.2.1",
+    "semantic-release": "24.2.3",
     "standard": "17.0.0",
     "web3.storage": "4.3.0"
+  },
+  "release": {
+    "publish": [
+      {
+        "path": "@semantic-release/npm",
+        "npmPublish": false
+      }
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint"
+    }
   }
 }
