@@ -36,6 +36,7 @@ function useAppState () {
   const [modalBody, setModalBody] = useState([])
   const [hideSpinner, setHideSpinner] = useState(false)
   const [denyClose, setDenyClose] = useState(false)
+  const [userData, setUserData] = useState(lsState.userData)
 
   // The wallet state makes this a true progressive web app (PWA). As
   // balances, UTXOs, and tokens are retrieved, this state is updated.
@@ -56,6 +57,11 @@ function useAppState () {
     // console.log(`updateLocalStorage() output: ${JSON.stringify(newObj, null, 2)}`)
 
     setLSState(newObj)
+  }
+
+  const logout = () => {
+    setUserData(null)
+    removeLocalStorageItem('userData')
   }
 
   const [bchWalletState, setBchWalletState] = useState({
@@ -131,7 +137,10 @@ function useAppState () {
     dexLib,
     setDexLib,
     nostr,
-    setNostr
+    setNostr,
+    userData,
+    setUserData,
+    logout
   }
 }
 
