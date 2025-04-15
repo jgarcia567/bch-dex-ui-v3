@@ -1,7 +1,15 @@
+/*
+  This component is used to login or sign up to the app.
+*/
+
+// Global npm libraries
 import React, { useState } from 'react'
 import { Form, Button, Container, Row, Col, Card, Alert, Tabs, Tab, Spinner } from 'react-bootstrap'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+
+// Local libraries
+import config from '../../../config'
 
 const Login = ({ appData }) => {
   const [formData, setFormData] = useState({
@@ -45,7 +53,7 @@ const Login = ({ appData }) => {
   // Call auth endpoint
   const auth = async (e) => {
     const options = {
-      url: `${appData.serverUrl}/auth`,
+      url: `${config.dexServer}/auth`,
       method: 'POST',
       data: formData
     }
@@ -56,7 +64,7 @@ const Login = ({ appData }) => {
   // call create user endpoint
   const createUser = async (e) => {
     const options = {
-      url: `${appData.serverUrl}/users`,
+      url: `${config.dexServer}/users`,
       method: 'POST',
       data: {
         user: {
