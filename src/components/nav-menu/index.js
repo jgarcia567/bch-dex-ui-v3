@@ -15,7 +15,7 @@ import Logo from './psf-logo.png'
 
 function NavMenu (props) {
   // Get the current path
-  const { currentPath } = props.appData
+  const { currentPath, userData, logout } = props.appData
 
   // Navbar state
   const [expanded, setExpanded] = useState(false)
@@ -24,6 +24,14 @@ function NavMenu (props) {
   const handleClickEvent = () => {
     // Collapse the navbar
     setExpanded(false)
+  }
+
+  // Function to protect email address
+  const protectEmail = (email) => {
+    if (!email) return ''
+    const [username, domain] = email.split('@')
+    const protectedUsername = username.slice(0, 3) + '***'
+    return `${protectedUsername}@${domain}`
   }
 
   return (
@@ -99,6 +107,13 @@ function NavMenu (props) {
               onClick={handleClickEvent}
             >
               Configuration
+            </NavLink>
+            <NavLink
+              className={currentPath === '/login' ? 'nav-link-active' : 'nav-link-inactive'}
+              to='/login'
+              onClick={(e) => { logout(); handleClickEvent(e) }}
+            >
+              {userData?.email ? `Logout (${protectEmail(userData.email)})` : 'Login'}
             </NavLink>
           </Nav>
         </Navbar.Collapse>
