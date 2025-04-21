@@ -1,18 +1,20 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 // import { useQueryParam, StringParam } from 'use-query-params'
 import useLocalStorageState from 'use-local-storage-state'
 import AppUtil from '../util'
+import { useNavigate, useLocation } from 'react-router-dom'
 
-import { useLocation } from 'react-router-dom'
+import config from '../config'
 
 function useAppState () {
   const location = useLocation()
-
+  const navigate = useNavigate()
   // Load Local storage Data
   const [lsState, setLSState, { removeItem }] = useLocalStorageState('bchWalletState-template', {
     ssr: true,
     defaultValue: {
-      serverUrl: 'https://free-bch.fullstack.cash' // Default server
+      serverUrl: 'https://free-bch.fullstack.cash', // Default server
+      dexServerUrl: config.dexServer // Default dex server url
     }
   })
 
@@ -23,6 +25,8 @@ function useAppState () {
   const [menuState, setMenuState] = useState(0)
   const [wallet, setWallet] = useState(false)
   const [servers, setServers] = useState([])
+  const [defaultDexServerUrl] = useState(config.dexServer) // Default dex server url
+  const [dexServerUrl, setDexServerUrl] = useState(lsState.dexServerUrl) // selected dex server url
   const [dexLib, setDexLib] = useState(false)
   const [nostr, setNostr] = useState(false)
 
@@ -30,6 +34,8 @@ function useAppState () {
   const [asyncInitStarted, setAsyncInitStarted] = useState(false)
   const [asyncInitFinished, setAsyncInitFinished] = useState(false)
   const [asyncInitSucceeded, setAsyncInitSucceeded] = useState(null)
+  const [isLoggedIn, setIsLoggedIn] = useState(null)
+  const [loggedInAlreadyChecked, setLoggedInAlreadyChecked] = useState(false)
 
   // Modal state management
   const [showStartModal, setShowStartModal] = useState(true)
@@ -49,6 +55,7 @@ function useAppState () {
   // })
   // console.log('lsState: ', lsState)
   const removeLocalStorageItem = removeItem
+
   const updateLocalStorage = (lsObj) => {
     // console.log(`updateLocalStorage() input: ${JSON.stringify(lsObj, null, 2)}`)
 
@@ -59,10 +66,26 @@ function useAppState () {
     setLSState(newObj)
   }
 
+  // Logout the user
   const logout = () => {
     setUserData(null)
     removeLocalStorageItem('userData')
   }
+
+  /**
+   * Check if the user is logged in
+   */
+  useEffect(() => {
+    // verify if the user is logged in
+    const isLoggedIn = userData && userData.email
+    setIsLoggedIn(isLoggedIn) // update the state
+
+    // if the user is not logged in, navigate to the login page
+    if (!isLoggedIn && !loggedInAlreadyChecked) {
+      setLoggedInAlreadyChecked(true) // prevent re-navigation
+      navigate('/login')
+    }
+  }, [userData, navigate, loggedInAlreadyChecked])
 
   const [bchWalletState, setBchWalletState] = useState({
     mnemonic: undefined,
@@ -95,7 +118,7 @@ function useAppState () {
         return newBchWalletState
       })
 
-    // console.log(`New wallet state: ${JSON.stringify(bchWalletState, null, 2)}`)
+      // console.log(`New wallet state: ${JSON.stringify(bchWalletState, null, 2)}`)
     } catch (err) {
       console.error('Error in App.js updateBchWalletState()')
       throw err
@@ -140,7 +163,11 @@ function useAppState () {
     setNostr,
     userData,
     setUserData,
-    logout
+    logout,
+    dexServerUrl,
+    setDexServerUrl,
+    defaultDexServerUrl,
+    isLoggedIn
   }
 }
 

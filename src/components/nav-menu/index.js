@@ -15,8 +15,7 @@ import Logo from './psf-logo.png'
 
 function NavMenu (props) {
   // Get the current path
-  const { currentPath, userData, logout } = props.appData
-
+  const { currentPath, userData, logout, isLoggedIn } = props.appData
   // Navbar state
   const [expanded, setExpanded] = useState(false)
 
@@ -46,61 +45,64 @@ function NavMenu (props) {
         <Navbar.Collapse id='responsive-navbar-nav'>
           <Nav className='mr-auto'>
 
-            <NavLink
-              className={(currentPath === '/nfts-for-sale' || currentPath === '/') ? 'nav-link-active' : 'nav-link-inactive'}
-              to='/nfts-for-sale'
-              onClick={handleClickEvent}
-            >
-              NFTs for Sale
-            </NavLink>
+            {isLoggedIn && (
+              <>
+                <NavLink
+                  className={(currentPath === '/nfts-for-sale' || currentPath === '/') ? 'nav-link-active' : 'nav-link-inactive'}
+                  to='/nfts-for-sale'
+                  onClick={handleClickEvent}
+                >
+                  NFTs for Sale
+                </NavLink>
 
-            <NavLink
-              className={(currentPath === '/bch') ? 'nav-link-active' : 'nav-link-inactive'}
-              to='/bch'
-              onClick={handleClickEvent}
-            >
-              BCH
-            </NavLink>
+                <NavLink
+                  className={(currentPath === '/bch') ? 'nav-link-active' : 'nav-link-inactive'}
+                  to='/bch'
+                  onClick={handleClickEvent}
+                >
+                  BCH
+                </NavLink>
 
-            <NavLink
-              className={currentPath === '/slp-tokens' ? 'nav-link-active' : 'nav-link-inactive'}
-              to='/slp-tokens'
-              onClick={handleClickEvent}
-            >
-              Tokens
-            </NavLink>
+                <NavLink
+                  className={currentPath === '/slp-tokens' ? 'nav-link-active' : 'nav-link-inactive'}
+                  to='/slp-tokens'
+                  onClick={handleClickEvent}
+                >
+                  Tokens
+                </NavLink>
 
-            <NavLink
-              className={currentPath === '/wallet' ? 'nav-link-active' : 'nav-link-inactive'}
-              to='/wallet'
-              onClick={handleClickEvent}
+                <NavLink
+                  className={currentPath === '/wallet' ? 'nav-link-active' : 'nav-link-inactive'}
+                  to='/wallet'
+                  onClick={handleClickEvent}
+                >
+                  Wallet
+                </NavLink>
 
-            >
-              Wallet
-            </NavLink>
+                <NavLink
+                  className={(currentPath === '/balance') ? 'nav-link-active' : 'nav-link-inactive'}
+                  to='/balance'
+                  onClick={handleClickEvent}
+                >
+                  Check Balance
+                </NavLink>
 
-            <NavLink
-              className={(currentPath === '/balance') ? 'nav-link-active' : 'nav-link-inactive'}
-              to='/balance'
-              onClick={handleClickEvent}
-            >
-              Check Balance
-            </NavLink>
-
-            <NavLink
-              className={(currentPath === '/sweep') ? 'nav-link-active' : 'nav-link-inactive'}
-              to='/sweep'
-              onClick={handleClickEvent}
-            >
-              Sweep
-            </NavLink>
-            <NavLink
-              className={(currentPath === '/sign') ? 'nav-link-active' : 'nav-link-inactive'}
-              to='/sign'
-              onClick={handleClickEvent}
-            >
-              Sign
-            </NavLink>
+                <NavLink
+                  className={(currentPath === '/sweep') ? 'nav-link-active' : 'nav-link-inactive'}
+                  to='/sweep'
+                  onClick={handleClickEvent}
+                >
+                  Sweep
+                </NavLink>
+                <NavLink
+                  className={(currentPath === '/sign') ? 'nav-link-active' : 'nav-link-inactive'}
+                  to='/sign'
+                  onClick={handleClickEvent}
+                >
+                  Sign
+                </NavLink>
+              </>
+            )}
             <NavLink
               className={currentPath === '/configuration' ? 'nav-link-active' : 'nav-link-inactive'}
               to='/configuration'
@@ -113,7 +115,7 @@ function NavMenu (props) {
               to='/login'
               onClick={(e) => { logout(); handleClickEvent(e) }}
             >
-              {userData?.email ? `Logout (${protectEmail(userData.email)})` : 'Login'}
+              {isLoggedIn ? `Logout (${protectEmail(userData?.email)})` : 'Login'}
             </NavLink>
           </Nav>
         </Navbar.Collapse>
