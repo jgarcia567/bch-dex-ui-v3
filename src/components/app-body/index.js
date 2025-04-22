@@ -24,6 +24,8 @@ import SweepWif from './sweep/index.js'
 import SignMessage from './sign/index.js'
 import ServerSelectView from './configuration/select-server-view'
 import Login from './account-creation/login'
+import ConfigurationView from './configuration/index'
+
 function AppBody (props) {
   // Dependency injection through props
   const appData = props.appData
@@ -42,7 +44,7 @@ function AppBody (props) {
         <Route path='/servers' element={<ServerSelectView appData={appData} />} />
         <Route path='/sweep' element={<SweepWif appData={appData} />} />
         <Route path='/sign' element={<SignMessage appData={appData} />} />
-        <Route path='/configuration' element={<ServerSelectView appData={appData} />} />
+        <Route path='/configuration' element={<ConfigurationView appData={appData} />} />
         <Route path='/login' element={<Login appData={appData} />} />
       </Routes>
       {/** Show in all paths except the servers view */}
