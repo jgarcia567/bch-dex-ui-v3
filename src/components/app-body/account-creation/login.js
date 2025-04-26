@@ -91,15 +91,16 @@ const Login = ({ appData }) => {
       } else {
         user = await createUser()
       }
-
       setOnFetch(false)
+      console.log('User ', user)
 
       // update local storage and user data state
       if (user) {
         const userData = {
           token: user.token,
           email: user.user.email,
-          _id: user.user._id
+          _id: user.user._id,
+          mnemonic: user.user.mnemonic
         }
         appData.updateLocalStorage({
           userData

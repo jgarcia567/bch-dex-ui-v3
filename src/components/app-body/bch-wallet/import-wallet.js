@@ -47,7 +47,7 @@ const WalletImport = (props) => {
       }
 
       // Replace the old mnemonic in LocalStorage with the new one.
-      appData.updateLocalStorage({ mnemonic })
+      //  appData.updateLocalStorage({ mnemonic })
       // Reload the app.
       window.location.reload()
     } catch (error) {

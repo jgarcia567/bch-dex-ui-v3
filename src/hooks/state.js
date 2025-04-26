@@ -38,7 +38,7 @@ function useAppState () {
   const [loggedInAlreadyChecked, setLoggedInAlreadyChecked] = useState(false)
 
   // Modal state management
-  const [showStartModal, setShowStartModal] = useState(true)
+  const [showStartModal, setShowStartModal] = useState(false)
   const [modalBody, setModalBody] = useState([])
   const [hideSpinner, setHideSpinner] = useState(false)
   const [denyClose, setDenyClose] = useState(false)
