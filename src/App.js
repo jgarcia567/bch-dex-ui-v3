@@ -35,8 +35,9 @@ function App (props) {
     async function asyncEffect () {
       console.log('asyncInitStarted: ', appData.asyncInitStarted)
 
-      if (!appData.asyncInitStarted) {
+      if (!appData.asyncInitStarted && appData.isLoggedIn) {
         try {
+          appData.setShowStartModal(true)
           // Instantiate the async load object.
           const asyncLoad = new AsyncLoad()
           appData.setAsyncInitStarted(true)
@@ -55,7 +56,7 @@ function App (props) {
           addToModal('Initializing wallet', appData)
           console.log(`Initializing wallet with back end server ${appData.serverUrl}`)
 
-          const walletTemp = await asyncLoad.initWallet(appData.serverUrl, appData.lsState.mnemonic, appData)
+          const walletTemp = await asyncLoad.initWallet(appData.serverUrl, appData.userData.mnemonic, appData)
           appData.setWallet(walletTemp)
           // appData.updateBchWalletState({ walletObj: walletTemp.walletInfo, appData })
 

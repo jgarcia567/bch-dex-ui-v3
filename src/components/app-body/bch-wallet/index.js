@@ -11,8 +11,8 @@ import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons'
 // Local Libraries
 import WebWalletWarning from './warning'
 import WalletSummary from './wallet-summary'
-import WalletClear from './clear-wallet'
-import WalletImport from './import-wallet'
+// import WalletClear from './clear-wallet'
+// import WalletImport from './import-wallet'
 import OptimizeWallet from './optimize-wallet'
 
 function BchWallet (props) {
@@ -35,10 +35,10 @@ function BchWallet (props) {
       <br />
       <WalletSummary appData={appData} />
       <br />
-      <WalletClear appData={appData} />
-      <br />
-      <WalletImport appData={appData} />
-      <br />
+      {/*       <WalletClear appData={appData} />
+      <br /> */}
+      {/*      <WalletImport appData={appData} />
+      <br /> */}
       <OptimizeWallet appData={appData} />
     </>
   )
