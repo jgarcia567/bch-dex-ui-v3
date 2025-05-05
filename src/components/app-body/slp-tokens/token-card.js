@@ -10,6 +10,7 @@ import Jdenticon from '@chris.troutner/react-jdenticon'
 // Local libraries
 import InfoButton from './info-button'
 import SendTokenButton from './send-token-button'
+import SellButton from './sell-button'
 
 function TokenCard (props) {
   const { token } = props
@@ -66,6 +67,13 @@ function TokenCard (props) {
                 </Col>
                 <Col>
                   <SendTokenButton
+                    token={props.token}
+                    appData={props.appData}
+                    refreshTokens={props.refreshTokens}
+                  />
+                </Col>
+                <Col>
+                  <SellButton
                     token={props.token}
                     appData={props.appData}
                     refreshTokens={props.refreshTokens}
