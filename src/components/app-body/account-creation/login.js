@@ -92,7 +92,7 @@ const Login = ({ appData }) => {
         user = await createUser()
       }
       setOnFetch(false)
-      console.log('User ', user)
+      // console.log('User ', user)
 
       // update local storage and user data state
       if (user) {
@@ -108,6 +108,7 @@ const Login = ({ appData }) => {
         appData.setUserData(userData)
       }
       navigate('/')
+      window.location.reload()
     } catch (err) {
       setOnFetch(false)
       let errMsg = err.message
