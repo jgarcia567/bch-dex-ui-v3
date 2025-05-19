@@ -69,11 +69,11 @@ class NostrBrowser {
       //   tags: [['t', 'bch-dex-test-topic-01']]
       // }
 
-      const relayWs = 'wss://nostr-relay.psfoundation.info'
+      const relayWs = config.nostrRelay
       const eventTemplate = {
         kind: 867,
         created_at: Math.floor(Date.now() / 1000),
-        tags: [['t', 'bch-dex-test-topic-01']],
+        tags: [['t', config.nostrTopic]],
         content: msg
       }
 
