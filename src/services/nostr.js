@@ -13,6 +13,7 @@ import { finalizeEvent } from 'nostr-tools/pure'
 import { Relay } from 'nostr-tools/relay'
 import BchNostr from 'bch-nostr'
 import * as nip19 from 'nostr-tools/nip19'
+import config from '../config/index.js'
 
 class NostrBrowser {
   constructor (localConfig = {}) {
@@ -23,8 +24,8 @@ class NostrBrowser {
     this.bchWallet = localConfig.bchWallet
 
     this.bchNostr = new BchNostr({
-      relayWs: 'wss://nostr-relay.psfoundation.info',
-      topic: 'bch-dex-test-topic-01'
+      relayWs: config.nostrRelay,
+      topic: config.nostrTopic
     })
   }
 
