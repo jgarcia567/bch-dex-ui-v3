@@ -41,7 +41,10 @@ const SweepWif = (props) => {
 
   // Handle sweep function
   const handleSweep = async (e) => {
-    e.preventDefault()
+    if (e) {
+      e.preventDefault()
+    }
+
     try {
       console.log(`Sweeping this WIF: ${wifToSweep}`)
 
