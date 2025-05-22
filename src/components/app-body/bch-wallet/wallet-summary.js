@@ -3,7 +3,7 @@
 */
 
 // Global npm libraries
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Container, Row, Col, Card } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faWallet, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
@@ -12,17 +12,26 @@ import { faWallet, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
 // Local libraries
 import './wallet-summary.css'
 import CopyOnClick from './copy-on-click'
+import { getPublicKey } from 'nostr-tools/pure'
+import { base58_to_binary as base58ToBinary } from 'base58-js'
+import { bytesToHex } from '@noble/hashes/utils' // already an installed dependency
 
 function WalletSummary (props) {
   // Props
   const appData = props.appData
-
   const bchWalletState = appData.bchWalletState
+
   console.log('wallet summary state: ', bchWalletState)
 
   // State
   const [blurredMnemonic, setBlurredMnemonic] = useState(true)
   const [blurredPrivateKey, setBlurredPrivateKey] = useState(true)
+  const [blurredNostrPrivKey, setBlurredNostrPrivKey] = useState(true)
+
+  const [nostrKeyPair, setNostrKeyPair] = useState({
+    privHex: '',
+    pubHex: ''
+  })
 
   // Encapsulate component state into an object that can be passed to child functions
   const walletSummaryData = {
@@ -64,6 +73,39 @@ function WalletSummary (props) {
     }
   }
 
+  // Toggle the state of blurring for the private key
+  const toggleNostrPrivateKeyBlur = (inObj = {}) => {
+    try {
+      setBlurredNostrPrivKey(!blurredNostrPrivKey)
+    } catch (error) {
+      console.error('Error toggling private key blur: ', error)
+    }
+  }
+
+  const nostrKeyPairFromWIF = useCallback((WIF) => {
+    if (!WIF) return
+
+    // Extract the privaty key from the WIF, using this guide:
+    // https://learnmeabitcoin.com/technical/keys/private-key/wif/
+    const wifBuf = base58ToBinary(WIF)
+    const privBuf = wifBuf.slice(1, 33)
+    // console.log('privBuf: ', privBuf)
+
+    const privHex = bytesToHex(privBuf)
+    console.log('BCH & Nostr private key (HEX format): ', privHex)
+
+    const pubHex = getPublicKey(privBuf)
+    console.log('nostrPubKey: ', pubHex)
+
+    return {
+      privHex,
+      pubHex
+    }
+  }, [])
+
+  useEffect(() => {
+    setNostrKeyPair(nostrKeyPairFromWIF(bchWalletState.privateKey))
+  }, [nostrKeyPairFromWIF, bchWalletState])
   return (
     <>
       <Container>
@@ -149,6 +191,32 @@ function WalletSummary (props) {
                     <Col xs={6} sm={1} lg={2} style={{ textAlign: 'center' }} />
                     <Col xs={6} sm={1} lg={2} style={{ textAlign: 'center' }}>
                       <CopyOnClick walletProp='hdPath' appData={appData} value={bchWalletState.hdPath} />
+                    </Col>
+                  </Row>
+                  <Row style={{ padding: '25px', backgroundColor: '#eee' }}>
+                    <Col xs={10} sm={10} lg={8} style={{ padding: '10px' }}>
+                      <b>Nostr Priv Key:</b> <span className={blurredNostrPrivKey ? 'blurred' : null}>{nostrKeyPair.privHex}</span>
+                    </Col>
+                    <Col xs={6} sm={1} lg={2} style={{ textAlign: 'center' }}>
+                      <FontAwesomeIcon
+                        style={{ cursor: 'pointer' }}
+                        icon={eyeIcon.privateKey}
+                        size='lg'
+                        onClick={() => toggleNostrPrivateKeyBlur(nostrKeyPair.privHex)}
+                      />
+                    </Col>
+                    <Col xs={6} sm={1} lg={2} style={{ textAlign: 'center' }}>
+                      <CopyOnClick appData={appData} value={nostrKeyPair.privHex} />
+                    </Col>
+                  </Row>
+                  <Row style={{ padding: '25px', backgroundColor: '#eee' }}>
+                    <Col xs={10} sm={10} lg={8} style={{ padding: '10px' }}>
+                      <b>Nostr Pub Key:</b> {nostrKeyPair.pubHex}
+                    </Col>
+                    <Col xs={6} sm={1} lg={2} style={{ textAlign: 'center' }} />
+
+                    <Col xs={6} sm={1} lg={2} style={{ textAlign: 'center' }}>
+                      <CopyOnClick appData={appData} value={nostrKeyPair.pubHex} />
                     </Col>
                   </Row>
                 </Container>
