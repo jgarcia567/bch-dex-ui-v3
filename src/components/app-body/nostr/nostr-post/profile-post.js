@@ -1,5 +1,5 @@
 /*
-Component for posting nostr information.
+Component for posting nostr information on kind 0.
 */
 
 // Global npm libraries
@@ -10,8 +10,8 @@ import { finalizeEvent } from 'nostr-tools/pure'
 import { Relay } from 'nostr-tools/relay'
 import { hexToBytes } from '@noble/hashes/utils' // already an installed dependency
 
-function NostrPost (props) {
-  const [accordionKey, setAccordionKey] = useState('1')
+function ProfilePost (props) {
+  const [accordionKey, setAccordionKey] = useState(null)
   const [onFetch, setOnFetch] = useState(false)
   const { bchWalletState } = props.appData
   const [formData, setFormData] = useState({
@@ -96,10 +96,10 @@ function NostrPost (props) {
 
   return (
     <>
-      <Container>
+      <Container className='mt-4'>
         <Accordion activeKey={accordionKey} onSelect={handleAccordionChange}>
-          <Accordion.Item eventKey='1'>
-            <Accordion.Header>Post</Accordion.Header>
+          <Accordion.Item eventKey='0'>
+            <Accordion.Header>Profile Post</Accordion.Header>
             <Accordion.Body>
               {errorMsg && (
                 <div className='alert alert-danger' role='alert'>
@@ -155,4 +155,4 @@ function NostrPost (props) {
   )
 }
 
-export default NostrPost
+export default ProfilePost
