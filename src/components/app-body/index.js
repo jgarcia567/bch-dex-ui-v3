@@ -23,8 +23,8 @@ import SlpTokens from './slp-tokens'
 import SweepWif from './sweep/index.js'
 import SignMessage from './sign/index.js'
 import ServerSelectView from './configuration/select-server-view'
-import NostrPost from './nostr/nostr-post.js'
-import NostrRead from './nostr/nostr-read.js'
+import NostrPost from './nostr/nostr-post/index.js'
+import NostrRead from './nostr/nostr-read/index.js'
 
 function AppBody (props) {
   // Dependency injection through props
