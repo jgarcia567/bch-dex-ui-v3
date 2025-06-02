@@ -124,7 +124,7 @@ const SweepWif = (props) => {
       console.log(`WIF: ${wif}`)
 
       // Sweep the private key holding the Counter Offer UTXOs.
-      setWifToSweep(wif)
+      await setWifToSweep(wif)
 
       await handleSweep()
     } catch (err) {
