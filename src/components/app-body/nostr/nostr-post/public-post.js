@@ -51,7 +51,7 @@ function PublicPost (props) {
       const eventTemplate = {
         kind: 1,
         created_at: Math.floor(Date.now() / 1000),
-        tags: [],
+        tags: [['t', 'slpdex-socialmedia']],
         content: formData.content
       }
       console.log(`eventTemplate: ${JSON.stringify(eventTemplate, null, 2)}`)
