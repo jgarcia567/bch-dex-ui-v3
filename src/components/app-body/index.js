@@ -25,8 +25,8 @@ import SignMessage from './sign/index.js'
 import ServerSelectView from './configuration/select-server-view'
 import Login from './account-creation/login'
 import ConfigurationView from './configuration/index'
-import NostrPost from './nostr/nostr-post.js'
-import NostrRead from './nostr/nostr-read.js'
+import NostrPost from './nostr/nostr-post/index.js'
+import NostrRead from './nostr/nostr-read/index.js'
 
 function AppBody (props) {
   // Dependency injection through props

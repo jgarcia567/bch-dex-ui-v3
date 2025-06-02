@@ -165,28 +165,28 @@ function WalletSummary (props) {
                   </Row>
                   <Row style={{ padding: '25px', backgroundColor: '#eee' }}>
                     <Col xs={10} sm={10} lg={8} style={{ padding: '10px' }}>
-                      <b>Nostr Priv Key:</b> <span className={blurredNostrPrivKey ? 'blurred' : null}>{nostrKeyPair.privHex}</span>
+                      <b>Nostr Priv Key:</b> <span className={blurredNostrPrivKey ? 'blurred' : null}>{nostrKeyPair.nsec}</span>
                     </Col>
                     <Col xs={6} sm={1} lg={2} style={{ textAlign: 'center' }}>
                       <FontAwesomeIcon
                         style={{ cursor: 'pointer' }}
                         icon={eyeIcon.privateKey}
                         size='lg'
-                        onClick={() => toggleNostrPrivateKeyBlur(nostrKeyPair.privHex)}
+                        onClick={() => toggleNostrPrivateKeyBlur(nostrKeyPair.nsec)}
                       />
                     </Col>
                     <Col xs={6} sm={1} lg={2} style={{ textAlign: 'center' }}>
-                      <CopyOnClick appData={appData} value={nostrKeyPair.privHex} />
+                      <CopyOnClick appData={appData} value={nostrKeyPair.nsec} />
                     </Col>
                   </Row>
                   <Row style={{ padding: '25px', backgroundColor: '#eee' }}>
                     <Col xs={10} sm={10} lg={8} style={{ padding: '10px' }}>
-                      <b>Nostr Pub Key:</b> {nostrKeyPair.pubHex}
+                      <b>Nostr Pub Key:</b> {nostrKeyPair.npub}
                     </Col>
                     <Col xs={6} sm={1} lg={2} style={{ textAlign: 'center' }} />
 
                     <Col xs={6} sm={1} lg={2} style={{ textAlign: 'center' }}>
-                      <CopyOnClick appData={appData} value={nostrKeyPair.pubHex} />
+                      <CopyOnClick appData={appData} value={nostrKeyPair.npub} />
                     </Col>
                   </Row>
                 </Container>
