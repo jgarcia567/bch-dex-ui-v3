@@ -3,26 +3,18 @@ Component for read nostr information.
 */
 
 // Global npm libraries
-import React from 'react'
+import React, { useState } from 'react'
 import { Container } from 'react-bootstrap'
 import ProfileRead from './profile-read.js'
 import PublicRead from './public-read.js'
 
 function NostrRead (props) {
+  const [profile, setProfile] = useState(false)
   return (
     <>
       <Container>
-        <h2 style={{
-          textAlign: 'center',
-          margin: '20px 0',
-          padding: '10px',
-          borderBottom: '2px solid #ccc'
-        }}
-        >
-          Nostr Read
-        </h2>
-        <ProfileRead {...props} />
-        <PublicRead {...props} />
+        <ProfileRead {...props} setProfile={setProfile} />
+        <PublicRead {...props} profile={profile} />
       </Container>
     </>
   )
