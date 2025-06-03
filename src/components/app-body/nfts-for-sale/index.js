@@ -98,10 +98,12 @@ function NftsForSale (props) {
 
         // Try to get token data.
         const tokenData = await appData.wallet.getTokenData(thisToken.tokenId)
-
+        console.log('tokenData', tokenData)
         if (tokenData) {
           // Set data to the token object , this can be used to display the token name in the token card component.
           thisToken.tokenData = tokenData
+          // Update the cache data  providing the tokenId to update and the data
+          appData.updateNFTCacheData(thisToken.tokenId, { tokenData })
         }
 
         // Mark token to prevent fetch token data again.
@@ -159,6 +161,8 @@ function NftsForSale (props) {
         if (iconUrl) {
           // Set the icon url to the token , this can be used to display the icon in the token card component.
           thisToken.icon = iconUrl
+          // Update the cache data  providing the tokenId to update and the data
+          appData.updateNFTCacheData(thisToken.tokenId, { tokenIcon: iconUrl })
         }
 
         // Mark token to prevent fetch token icon again.
@@ -169,7 +173,22 @@ function NftsForSale (props) {
     } catch (error) {
       setIconsAreLoaded(true)
     }
-  }, [fetchTokenInfo])
+  }, [fetchTokenInfo, appData])
+
+  // Load tokens data from the cache
+  const loadCacheData = useCallback(async (offers) => {
+    const cacheData = appData.nftForSaleData
+    console.log(`Token data from cache: ${JSON.stringify(cacheData, null, 2)}`)
+    // Map all offers and add cache data to the offers if it exists
+    for (let i = 0; i < offers.length; i++) {
+      const thisToken = offers[i]
+      const cacheToken = cacheData[thisToken.tokenId]
+      if (cacheToken) {
+        thisToken.tokenData = cacheToken.tokenData
+        thisToken.icon = cacheToken.tokenIcon
+      }
+    }
+  }, [appData])
 
   // Main function to load NFT offers
   const loadNftOffers = useCallback(async () => {
@@ -177,7 +196,7 @@ function NftsForSale (props) {
       setIsLoading(true)
       // Get tokens in offers
       const offers = await getNftOffers()
-      console.log('offers: ', offers)
+      await loadCacheData(offers)
       setOffers(offers)
       // Load tokens data
       await lazyLoadTokenData(offers)
@@ -188,7 +207,7 @@ function NftsForSale (props) {
       setIsLoading(false)
       console.error('Error loading NFT offers:', err)
     }
-  }, [lazyLoadTokenData, lazyLoadTokenIcons, getNftOffers])
+  }, [lazyLoadTokenData, lazyLoadTokenIcons, getNftOffers, loadCacheData])
 
   // Effect to load NFTs on component mount
   useEffect(() => {
