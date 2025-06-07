@@ -37,8 +37,8 @@ function useAppState () {
   const [hideSpinner, setHideSpinner] = useState(false)
   const [denyClose, setDenyClose] = useState(false)
 
-  // NFTs for sale state data
-  const [nftForSaleData, setNftForSaleData] = useState({})
+  // NFTs for sale stored data to improve performance
+  const [nftForSaleCacheData, setNftForSaleCacheData] = useState({})
 
   // The wallet state makes this a true progressive web app (PWA). As
   // balances, UTXOs, and tokens are retrieved, this state is updated.
@@ -100,14 +100,13 @@ function useAppState () {
   }
 
   // Update NFT for sale tokens data
-  function updateNFTCacheData (tokenId, data) {
-    const allCacheData = nftForSaleData // Get all cache data
+  function updateNFTCachedData (tokenId, data) {
+    const allCacheData = nftForSaleCacheData // Get all cache data
     const cacheData = allCacheData[tokenId] || {} // Get cache data for the tokenId
 
     const newCacheData = Object.assign({}, cacheData, data) // Merge the new data with the cache data
-    console.log('newCacheData: ', newCacheData)
     allCacheData[tokenId] = newCacheData // Update the cache data
-    setNftForSaleData(allCacheData) // Update the state
+    setNftForSaleCacheData(allCacheData) // Update the state
   }
 
   return {
@@ -146,9 +145,9 @@ function useAppState () {
     setDexLib,
     nostr,
     setNostr,
-    nftForSaleData,
-    setNftForSaleData,
-    updateNFTCacheData
+    nftForSaleCacheData,
+    setNftForSaleCacheData,
+    updateNFTCachedData
   }
 }
 

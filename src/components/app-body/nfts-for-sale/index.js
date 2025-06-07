@@ -102,8 +102,6 @@ function NftsForSale (props) {
         if (tokenData) {
           // Set data to the token object , this can be used to display the token name in the token card component.
           thisToken.tokenData = tokenData
-          // Update the cache data  providing the tokenId to update and the data
-          appData.updateNFTCacheData(thisToken.tokenId, { tokenData })
         }
 
         // Mark token to prevent fetch token data again.
@@ -117,7 +115,7 @@ function NftsForSale (props) {
   }, [appData])
 
   // Fetch mutable data if it exist and get the token icon url
-  const fetchTokenInfo = useCallback(async (token) => {
+  const fetchTokenMutableData = useCallback(async (token) => {
     try {
       // Get the token data
       const tokenData = token.tokenData
@@ -137,15 +135,16 @@ function NftsForSale (props) {
       if (json.fullSizedUrl && json.fullSizedUrl.includes('http')) {
         iconUrl = json.fullSizedUrl
       }
+      const userData = json.userData
       // Return icon url
-      return iconUrl
+      return { iconUrl, userData }
     } catch (error) {
       return false
     }
   }, [appData])
 
   //  This function loads the token icons from the ipfs gateways.
-  const lazyLoadTokenIcons = useCallback(async (tokens) => {
+  const lazyLoadMutableData = useCallback(async (tokens) => {
     try {
       setIconsAreLoaded(false)
       // map each token and fetch the icon url
@@ -156,13 +155,12 @@ function NftsForSale (props) {
         if (thisToken.iconAlreadyDownloaded) continue
 
         // Try to get token icon url from mutable data.
-        const iconUrl = await fetchTokenInfo(thisToken)
+        const { iconUrl, userData } = await fetchTokenMutableData(thisToken)
         console.log('iconUrl', iconUrl)
         if (iconUrl) {
           // Set the icon url to the token , this can be used to display the icon in the token card component.
           thisToken.icon = iconUrl
-          // Update the cache data  providing the tokenId to update and the data
-          appData.updateNFTCacheData(thisToken.tokenId, { tokenIcon: iconUrl })
+          thisToken.tokenData.userData = userData
         }
 
         // Mark token to prevent fetch token icon again.
@@ -173,20 +171,37 @@ function NftsForSale (props) {
     } catch (error) {
       setIconsAreLoaded(true)
     }
-  }, [fetchTokenInfo, appData])
+  }, [fetchTokenMutableData, appData])
 
-  // Load tokens data from the cache
-  const loadCacheData = useCallback(async (offers) => {
-    const cacheData = appData.nftForSaleData
+  //  Check if exiist token data in the cache and add it to the tokens object
+  const reviewNftCachedData = useCallback(async (offers) => {
+    const cacheData = appData.nftForSaleCacheData
     console.log(`Token data from cache: ${JSON.stringify(cacheData, null, 2)}`)
-    // Map all offers and add cache data to the offers if it exists
+    // Map all offers
     for (let i = 0; i < offers.length; i++) {
       const thisToken = offers[i]
       const cacheToken = cacheData[thisToken.tokenId]
+      // If cache data exists, add it to the token object
       if (cacheToken) {
         thisToken.tokenData = cacheToken.tokenData
         thisToken.icon = cacheToken.tokenIcon
       }
+    }
+  }, [appData])
+
+  //  Check if exiist token data in the cache and add it to the tokens object
+  const updateNFTCachedData = useCallback(async (offers) => {
+    // Map all offers
+    for (let i = 0; i < offers.length; i++) {
+      const thisToken = offers[i]
+      // save token icon and token data in cache
+      const newTokenCacheData = {
+        tokenIcon: thisToken.icon,
+        tokenData: thisToken.tokenData
+      }
+
+      console.log('newTokenCacheData: ', newTokenCacheData)
+      appData.updateNFTCachedData(thisToken.tokenId, newTokenCacheData)
     }
   }, [appData])
 
@@ -196,18 +211,24 @@ function NftsForSale (props) {
       setIsLoading(true)
       // Get tokens in offers
       const offers = await getNftOffers()
-      await loadCacheData(offers)
+      console.log('offers: ', offers)
+      // Review cached data to populate token data from cached data
+      await reviewNftCachedData(offers)
+      // set state to start displaying tokens cards.
       setOffers(offers)
-      // Load tokens data
+      // Load tokens data for  any updates to the token data
       await lazyLoadTokenData(offers)
-      // Load tokens icons
-      await lazyLoadTokenIcons(offers)
+      // Load tokens icons from mutable data
+      await lazyLoadMutableData(offers)
+
+      //  Update cached data with the latest retrieved data
+      await updateNFTCachedData(offers)
       setIsLoading(false)
     } catch (err) {
       setIsLoading(false)
       console.error('Error loading NFT offers:', err)
     }
-  }, [lazyLoadTokenData, lazyLoadTokenIcons, getNftOffers, loadCacheData])
+  }, [lazyLoadTokenData, lazyLoadMutableData, getNftOffers, reviewNftCachedData, updateNFTCachedData])
 
   // Effect to load NFTs on component mount
   useEffect(() => {
