@@ -121,6 +121,13 @@ function NavMenu (props) {
             >
               Global Feed
             </NavLink>
+            <NavLink
+              className={currentPath === '/offers' ? 'nav-link-active' : 'nav-link-inactive'}
+              to='/offers'
+              onClick={handleClickEvent}
+            >
+              Fungible Tokens
+            </NavLink>
           </Nav>
         </Navbar.Collapse>
       </Navbar>
