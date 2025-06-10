@@ -114,6 +114,13 @@ function NavMenu (props) {
             >
               Nostr Profile
             </NavLink>
+            <NavLink
+              className={currentPath === '/global-feed' ? 'nav-link-active' : 'nav-link-inactive'}
+              to='/global-feed'
+              onClick={handleClickEvent}
+            >
+              Global Feed
+            </NavLink>
           </Nav>
         </Navbar.Collapse>
       </Navbar>
