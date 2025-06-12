@@ -43,8 +43,42 @@ function NavMenu (props) {
               to='/nfts-for-sale'
               onClick={handleClickEvent}
             >
-              NFTs for Sale
+              NFTs
             </NavLink>
+
+            <NavLink
+              className={currentPath === '/offers' ? 'nav-link-active' : 'nav-link-inactive'}
+              to='/offers'
+              onClick={handleClickEvent}
+            >
+              Fungible Tokens
+            </NavLink>
+
+            <hr />
+
+            <NavLink
+              className={currentPath === '/global-feed' ? 'nav-link-active' : 'nav-link-inactive'}
+              to='/global-feed'
+              onClick={handleClickEvent}
+            >
+              Global Feed
+            </NavLink>
+            <NavLink
+              className={currentPath === '/nostr-post' ? 'nav-link-active' : 'nav-link-inactive'}
+              to='/nostr-post'
+              onClick={handleClickEvent}
+            >
+              Nostr Post
+            </NavLink>
+            <NavLink
+              className={currentPath === '/nostr-read' ? 'nav-link-active' : 'nav-link-inactive'}
+              to='/nostr-read'
+              onClick={handleClickEvent}
+            >
+              Nostr Profile
+            </NavLink>
+
+            <hr />
 
             <NavLink
               className={(currentPath === '/bch') ? 'nav-link-active' : 'nav-link-inactive'}
@@ -100,34 +134,7 @@ function NavMenu (props) {
             >
               Configuration
             </NavLink>
-            <NavLink
-              className={currentPath === '/nostr-post' ? 'nav-link-active' : 'nav-link-inactive'}
-              to='/nostr-post'
-              onClick={handleClickEvent}
-            >
-              Nostr Post
-            </NavLink>
-            <NavLink
-              className={currentPath === '/nostr-read' ? 'nav-link-active' : 'nav-link-inactive'}
-              to='/nostr-read'
-              onClick={handleClickEvent}
-            >
-              Nostr Profile
-            </NavLink>
-            <NavLink
-              className={currentPath === '/global-feed' ? 'nav-link-active' : 'nav-link-inactive'}
-              to='/global-feed'
-              onClick={handleClickEvent}
-            >
-              Global Feed
-            </NavLink>
-            <NavLink
-              className={currentPath === '/offers' ? 'nav-link-active' : 'nav-link-inactive'}
-              to='/offers'
-              onClick={handleClickEvent}
-            >
-              Fungible Tokens
-            </NavLink>
+
           </Nav>
         </Navbar.Collapse>
       </Navbar>
