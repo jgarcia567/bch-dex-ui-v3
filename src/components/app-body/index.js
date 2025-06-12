@@ -27,6 +27,7 @@ import NostrPost from './nostr/nostr-post/index.js'
 import NostrRead from './nostr/nostr-read/index.js'
 import GlobalFeed from './nostr/global-feed/index.js'
 import UserDataReview from './user-data-review'
+import Offers from './offers'
 function AppBody (props) {
   // Dependency injection through props
   const appData = props.appData
@@ -50,6 +51,7 @@ function AppBody (props) {
         <Route path='/nostr-read' element={<NostrRead appData={appData} />} />
         <Route path='/global-feed' element={<GlobalFeed appData={appData} />} />
         <Route path='/user-data/:cid' element={<UserDataReview appData={appData} />} />
+        <Route path='/offers' element={<Offers appData={appData} />} />
       </Routes>
       {/** Show in all paths except the servers view */}
       {/* {appData.currentPath !== '/servers' && <SelectServerButton linkTo='/servers' appData={appData} />} */}
