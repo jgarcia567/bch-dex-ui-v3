@@ -13,7 +13,8 @@ function useAppState () {
     ssr: true,
     defaultValue: {
       serverUrl: 'https://free-bch.fullstack.cash' // Default server
-    }
+    },
+    nftData: {}
   })
 
   console.log('lsState: ', lsState)
@@ -38,7 +39,7 @@ function useAppState () {
   const [denyClose, setDenyClose] = useState(false)
 
   // NFTs for sale stored data to improve performance
-  const [nftForSaleCacheData, setNftForSaleCacheData] = useState({})
+  const [nftForSaleCacheData, setNftForSaleCacheData] = useState(lsState.nftData || {})
 
   // The wallet state makes this a true progressive web app (PWA). As
   // balances, UTXOs, and tokens are retrieved, this state is updated.
@@ -107,6 +108,7 @@ function useAppState () {
     const newCacheData = Object.assign({}, cacheData, data) // Merge the new data with the cache data
     allCacheData[tokenId] = newCacheData // Update the cache data
     setNftForSaleCacheData(allCacheData) // Update the state
+    updateLocalStorage({ nftData: allCacheData }) // Update the local storage
   }
 
   return {
