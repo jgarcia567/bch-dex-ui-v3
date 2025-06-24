@@ -5,7 +5,7 @@
 // Global npm libraries
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import { Container, Row, Col, Tabs, Tab, Spinner } from 'react-bootstrap'
+import { Container, Row, Col, Tabs, Tab, Spinner, Carousel } from 'react-bootstrap'
 import ReactMarkdown from 'react-markdown'
 
 function UserDataReview (props) {
@@ -59,17 +59,31 @@ function UserDataReview (props) {
                 <Tab eventKey='media' title='Media'>
                   {media && media.length > 0
                     ? (
-                      <Row className='mt-3'>
-                        {media.map((item, index) => (
-                          <Col key={index} xs={12} sm={6} md={4} lg={4} className='mb-3'>
-                            <img
-                              src={item.url}
-                              alt={`Review media ${index + 1}`}
-                              style={{ width: '100%', height: '250px', objectFit: 'cover', borderRadius: '8px' }}
-                            />
-                          </Col>
-                        ))}
-                      </Row>
+                      <div className='mt-3 mb-5'>
+                        <Carousel>
+                          {media.map((item, index) => (
+                            <Carousel.Item key={index}>
+                              <img
+                                className='d-block w-100'
+                                src={item.url}
+                                alt={`Review media ${index + 1}`}
+                                style={{ height: '400px', objectFit: 'contain' }}
+                              />
+                              <Carousel.Caption>
+                                <p>Image {index + 1} of {media.length}</p>
+                              </Carousel.Caption>
+                            </Carousel.Item>
+                          ))}
+                        </Carousel>
+                        <style>{`
+                          .carousel-control-next,
+                          .carousel-control-prev, 
+                          .carousel-indicators {
+                              filter: invert(100%);
+                          }
+                        `}
+                        </style>
+                      </div>
                       )
                     : (
                       <p className='mt-3'>No media content available</p>
