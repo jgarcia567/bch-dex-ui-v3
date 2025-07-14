@@ -49,7 +49,7 @@ function AppBody (props) {
         <Route path='/sign' element={<SignMessage appData={appData} />} />
         <Route path='/configuration' element={<ServerSelectView appData={appData} />} />
         <Route path='/nostr-post' element={<NostrPost appData={appData} />} />
-        <Route path='/nostr-read' element={<NostrRead appData={appData} />} />
+        <Route path='/nostr-read/:npub' element={<NostrRead appData={appData} />} />
         <Route path='/global-feed' element={<GlobalFeed appData={appData} />} />
         <Route path='/content-creators' element={<ContentCreators appData={appData} />} />
         <Route path='/user-data/:tokenId' element={<UserDataReview appData={appData} />} />
