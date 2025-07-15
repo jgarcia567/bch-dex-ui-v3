@@ -12,7 +12,7 @@ import InfoButton from './info-button'
 import SendTokenButton from './send-token-button'
 
 function TokenCard (props) {
-  const { token } = props
+  const { token, hideSendBtn } = props
   const [icon, setIcon] = useState(token.icon)
 
   // Update icon state every token.icon changes
@@ -64,13 +64,15 @@ function TokenCard (props) {
                 <Col>
                   <InfoButton token={props.token} />
                 </Col>
-                <Col>
-                  <SendTokenButton
-                    token={props.token}
-                    appData={props.appData}
-                    refreshTokens={props.refreshTokens}
-                  />
-                </Col>
+                {!hideSendBtn && (
+                  <Col>
+                    <SendTokenButton
+                      token={props.token}
+                      appData={props.appData}
+                      refreshTokens={props.refreshTokens}
+                    />
+                  </Col>
+                )}
               </Row>
             </Container>
           </Card.Body>
