@@ -15,7 +15,7 @@ import Logo from './psf-logo.png'
 
 function NavMenu (props) {
   // Get the current path
-  const { currentPath } = props.appData
+  const { currentPath, bchWalletState } = props.appData
 
   // Navbar state
   const [expanded, setExpanded] = useState(false)
@@ -72,7 +72,7 @@ function NavMenu (props) {
             </NavLink>
             <NavLink
               className={currentPath === '/nostr-read' ? 'nav-link-active' : 'nav-link-inactive'}
-              to='/nostr-read'
+              to={`/nostr-read/${bchWalletState?.nostrKeyPair?.npub}`}
               onClick={handleClickEvent}
             >
               Nostr Profile
