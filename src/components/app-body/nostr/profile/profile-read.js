@@ -89,7 +89,7 @@ function ProfileRead (props) {
             ? (
               <img
                 src={post.picture}
-                alt='Profile picture'
+                alt='Profile'
                 className='rounded-circle shadow w-100 h-100'
                 style={{ objectFit: 'cover' }}
                 onError={() => handleImageError('picture')}
