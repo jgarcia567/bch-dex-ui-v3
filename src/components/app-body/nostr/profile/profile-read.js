@@ -117,13 +117,13 @@ function ProfileRead (props) {
           <div className='text-muted small mb-3 d-flex align-items-center flex-column flex-md-row'>
             <span className='text-truncate me-2 mb-2 mb-md-0'>
               <span className='d-md-none'>
-                {`${bchWalletState.nostrKeyPair.npub.slice(0, 8)}...${bchWalletState.nostrKeyPair.npub.slice(-5)}`}
+                {`${npub?.slice(0, 8)}...${npub?.slice(-5)}`}
               </span>
               <span className='d-none d-md-inline'>
-                {bchWalletState.nostrKeyPair.npub}
+                {npub}
               </span>
             </span>
-            <CopyOnClick walletProp='npub' appData={props.appData} value={bchWalletState.nostrKeyPair.npub} />
+            <CopyOnClick walletProp='npub' appData={props.appData} value={npub} />
           </div>
 
           {/* About Section */}
