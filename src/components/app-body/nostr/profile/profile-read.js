@@ -13,8 +13,6 @@ import * as nip19 from 'nostr-tools/nip19'
 
 function ProfileRead (props) {
   const { npub } = props
-  const { bchWalletState } = props.appData
-  console.log('npub prop', npub)
   const { setProfile } = props
   const [post, setPost] = useState({})
   const [loaded, setLoaded] = useState(false)
@@ -24,7 +22,6 @@ function ProfileRead (props) {
     const start = () => {
       const pubHexData = nip19.decode(npub)
       const pubHex = pubHexData.data
-      console.log('pubhex', pubHex)
       const psf = 'wss://nostr-relay.psfoundation.info'
 
       const pool = RelayPool([psf])
@@ -56,7 +53,7 @@ function ProfileRead (props) {
     if (!loaded && npub) {
       start()
     }
-  }, [bchWalletState, loaded, setProfile, npub])
+  }, [loaded, setProfile, npub])
 
   const handleImageError = (type) => {
     setImageError(prev => ({ ...prev, [type]: true }))
