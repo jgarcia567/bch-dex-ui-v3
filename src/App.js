@@ -45,6 +45,9 @@ function App (props) {
         await asyncLoad.loadWalletLib()
         const walletTemp = await asyncLoad.initStarterWallet(appData.serverUrl, appData.lsState.mnemonic, appData)
         appData.setWallet(walletTemp)
+        // Get the BCH spot price
+        addToModal('Getting BCH spot price in USD', appData)
+        await asyncLoad.getUSDExchangeRate(walletTemp, appData.updateBchWalletState, appData)
       }
 
       // Update Modal State
