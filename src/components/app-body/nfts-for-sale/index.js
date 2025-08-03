@@ -172,7 +172,7 @@ function NftsForSale (props) {
     } catch (error) {
       setIconsAreLoaded(true)
     }
-  }, [fetchTokenMutableData, appData])
+  }, [fetchTokenMutableData])
 
   //  Check if token data exists in the cache and add it to the tokens object.
   const reviewNftCachedData = useCallback(async (offers) => {

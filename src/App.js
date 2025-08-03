@@ -14,7 +14,10 @@ import NavMenu from './components/nav-menu'
 import useAppState from './hooks/state'
 import { UninitializedView, InitializedView } from './components/starter-views'
 
-const sigleViewPaths = ['/profile']
+// Paths with custom async loader
+// Single Views, load minimal async services in order to prevent the long-time screen loader.
+const sigleViewPaths = ['/profile', 'user-data']
+
 function App (props) {
   // Load all the app state into a single object that can be passed to child
   // components.
