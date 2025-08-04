@@ -1,13 +1,15 @@
 /*
-Component for reading the nostr feeds.
+  Component for reading the nostr feeds.
 */
 
 // Global npm libraries
 import React, { useState, useEffect, useCallback } from 'react'
 import { Container, Nav, Tab, Spinner } from 'react-bootstrap'
+import { RelayPool } from 'nostr'
+
+// Local libraries
 import Feed from './feed'
 import Following from './following'
-import { RelayPool } from 'nostr'
 
 function Feeds (props) {
   const { appData } = props

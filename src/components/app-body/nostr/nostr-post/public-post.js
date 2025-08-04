@@ -11,7 +11,7 @@ import { Relay } from 'nostr-tools/relay'
 import { hexToBytes } from '@noble/hashes/utils' // already an installed dependency
 
 function PublicPost (props) {
-  const [accordionKey, setAccordionKey] = useState(null)
+  const [accordionKey, setAccordionKey] = useState('0')
   const [onFetch, setOnFetch] = useState(false)
   const { bchWalletState } = props.appData
   const [formData, setFormData] = useState({
