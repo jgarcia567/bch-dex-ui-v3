@@ -10,6 +10,7 @@ import { RelayPool } from 'nostr'
 // Local libraries
 import Feed from './feed'
 import Following from './following'
+import config from '../../../../config'
 
 function Feeds (props) {
   const { appData } = props
@@ -30,9 +31,7 @@ function Feeds (props) {
       return currentProfiles
     })
 
-    const psf = 'wss://nostr-relay.psfoundation.info'
-
-    const pool = RelayPool([psf])
+    const pool = RelayPool(config.nostrRelays)
     pool.on('open', relay => {
       relay.subscribe('subid', { limit: 5, kinds: [0], authors: [pubkey] })
     })
@@ -72,9 +71,7 @@ function Feeds (props) {
   // Get global feed posts
   useEffect(() => {
     const start = () => {
-      const psf = 'wss://nostr-relay.psfoundation.info'
-
-      const pool = RelayPool([psf])
+      const pool = RelayPool(config.nostrRelays)
       pool.on('open', relay => {
         relay.subscribe('REQ', { limit: 10, kinds: [1], '#t': ['slpdex-socialmedia'] })
       })
