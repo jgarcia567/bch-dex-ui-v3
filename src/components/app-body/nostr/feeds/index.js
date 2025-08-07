@@ -22,14 +22,20 @@ function Feeds (props) {
   const [profiles, setProfiles] = useState({})
 
   // function to fetch profile and set it to profiles state
-  const fetchProfile = useCallback((pubkey) => {
+  const fetchProfile = useCallback(async (pubkey) => {
     // no fetch profile again if it exist
+    let hasProfileRequest = false
     setProfiles(currentProfiles => {
       if (currentProfiles[pubkey]) {
+        hasProfileRequest = true
         return currentProfiles
+      } else {
+        const newProfiles = { ...currentProfiles }
+        newProfiles[pubkey] = { loaded: false }
+        return newProfiles
       }
-      return currentProfiles
     })
+    if (hasProfileRequest) return
 
     const pool = RelayPool(config.nostrRelays)
     pool.on('open', relay => {
@@ -49,6 +55,7 @@ function Feeds (props) {
           return currentProfiles
         })
       } catch (error) {
+        console.warn(error)
         // skip error
       }
     })
