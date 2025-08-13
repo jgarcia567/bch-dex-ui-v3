@@ -2,12 +2,6 @@
   This component is used to display the list of content creators.
 
   TODO:
-  - getFollowList() should aggregate all the followers from all the relays.
-    Currently each relay overwrites the last one.
-
-  - loadProfile() should use multiple relays. It should exit after the first
-    successful retrieval of data from a relay. If the relay fails to give data,
-    it should move on to the next relay.
 */
 
 import React, { useState, useEffect, useCallback } from 'react'
