@@ -2,6 +2,12 @@
   This component is used to display the list of content creators.
 
   TODO:
+  - getFollowList() should aggregate all the followers from all the relays.
+    Currently each relay overwrites the last one.
+
+  - loadProfile() should use multiple relays. It should exit after the first
+    successful retrieval of data from a relay. If the relay fails to give data,
+    it should move on to the next relay.
 */
 
 import React, { useState, useEffect, useCallback } from 'react'
@@ -25,7 +31,8 @@ function ContentCreators (props) {
 
   const [followList, setFollowList] = useState([])
 
-  // Get the list of profiles followed by the user
+  // Get the list of profiles followed by the user.
+  // It aggregates all the followers from all the relays.
   const getFollowList = useCallback(async () => {
     const list = await new Promise((resolve, reject) => {
       let list = []
@@ -59,6 +66,8 @@ function ContentCreators (props) {
   }, [appData])
 
   // Load profile from nostr relays
+  // It uses multiple relays. It will exit after the first successful retrieval
+  // from any relay. If one relay fails, it will move on to the next one.
   const loadProfile = useCallback(async (pubKey) => {
     // Looking for the profile in each relay sequentially
     for (let i = 0; i < config.nostrRelays.length; i++) {
