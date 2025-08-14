@@ -13,6 +13,7 @@ import { finalizeEvent } from 'nostr-tools/pure'
 import { Relay } from 'nostr-tools/relay'
 import { hexToBytes } from '@noble/hashes/utils' // already an installed dependency
 import { RelayPool } from 'nostr'
+import CopyOnClick from '../../bch-wallet/copy-on-click.js'
 
 function FeedCard (props) {
   const { post, appData, profiles } = props
@@ -21,7 +22,6 @@ function FeedCard (props) {
   const [profile, setProfile] = useState(profiles[post.pubkey])
 
   const [npub, setNpub] = useState('')
-  const [isClicked, setIsClicked] = useState(false)
   const [isLiked, setIsLiked] = useState(false)
   const [likesCount, setLikesCount] = useState(null)
   const [likesFetched, setLikesFetched] = useState(false)
@@ -104,13 +104,6 @@ function FeedCard (props) {
     }
   }, [profiles, post])
 
-  // copy to clipboard
-  const copyToClipboard = useCallback((value) => {
-    setIsClicked(true)
-    appData.appUtil.copyToClipboard(value)
-    setTimeout(() => setIsClicked(false), 200)
-  }, [appData])
-
   // get short npub
   const getShortNpub = useCallback((npub) => {
     return npub.slice(0, 8) + '...' + npub.slice(-5)
@@ -168,6 +161,11 @@ function FeedCard (props) {
     }
   }
 
+  const goToProfile = () => {
+    const profileUrl = `${window.location.origin}/profile/${npub}#single-view`
+    window.open(profileUrl, '_blank')
+  }
+
   return (
     <Card className='mb-4 bg-light rounded-4 shadow-sm border-0'>
       <Card.Body className='p-3'>
@@ -186,20 +184,21 @@ function FeedCard (props) {
                   src={profile.picture}
                   alt='Profile'
                   className='rounded-circle w-100 h-100'
-                  style={{ objectFit: 'cover' }}
+                  style={{ objectFit: 'cover', cursor: 'pointer' }}
                   onError={handleProfilePictureError}
                   onLoad={handleProfilePictureLoad}
+                  onClick={goToProfile}
                 />
                 )
               : (
-                <FontAwesomeIcon icon={faUser} size='1x' color='#7c7c7d' />
+                <FontAwesomeIcon icon={faUser} size='1x' color='#7c7c7d' style={{ cursor: 'pointer' }} onClick={goToProfile} />
                 )}
           </div>
           <div className='flex-grow-1'>
             <div className='fw-bold mb-1'>
-              {profile && profile.name && <span>{profile.name}</span>}
+              {profile && profile.name && <span style={{ cursor: 'pointer' }} onClick={goToProfile}>{profile.name}</span>}
               {!profile?.name && (
-                <span>
+                <span style={{ cursor: 'pointer' }} onClick={goToProfile}>
                   {post.pubkey.slice(0, 8) + '...'}
                   {!profile?.loaded && <Spinner animation='border' size='sm' className='ms-2' />}
                 </span>
@@ -211,14 +210,20 @@ function FeedCard (props) {
                   title='Copy to clipboard'
                   style={{
                     cursor: 'pointer',
-                    transform: isClicked ? 'scale(0.95)' : 'scale(1)',
                     transition: 'transform 0.1s ease',
-                    display: 'inline-block'
+                    display: 'inline-block',
+                    marginRight: '5px'
                   }}
-                  onClick={() => copyToClipboard(npub)}
+                  onClick={goToProfile}
+
                 >
                   {getShortNpub(npub)}
                 </span>
+                <CopyOnClick
+                  walletProp='npub'
+                  appData={props.appData}
+                  value={npub}
+                />
               </small>
             )}
           </div>
