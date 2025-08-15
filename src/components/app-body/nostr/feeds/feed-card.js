@@ -1,6 +1,7 @@
 /**
  * Component for displaying nostr posts
  */
+
 // Global npm libraries
 import React, { useCallback, useEffect, useState } from 'react'
 import { Card, Spinner } from 'react-bootstrap'
@@ -8,12 +9,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser, faHeart as faHeartSolid } from '@fortawesome/free-solid-svg-icons'
 import { faHeart } from '@fortawesome/free-regular-svg-icons'
 import * as nip19 from 'nostr-tools/nip19'
-import NostrFormat from '../nostr-format'
 import { finalizeEvent } from 'nostr-tools/pure'
 import { Relay } from 'nostr-tools/relay'
 import { hexToBytes } from '@noble/hashes/utils' // already an installed dependency
 import { RelayPool } from 'nostr'
+
+// Local libraries
 import CopyOnClick from '../../bch-wallet/copy-on-click.js'
+import NostrFormat from '../nostr-format'
 
 function FeedCard (props) {
   const { post, appData, profiles } = props

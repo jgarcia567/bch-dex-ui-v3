@@ -1,6 +1,5 @@
 /*
   Component for reading the nostr feeds.
-
 */
 
 // Global npm libraries
