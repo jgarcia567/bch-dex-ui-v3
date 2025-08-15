@@ -2,7 +2,7 @@
  *  Component for read nostr information kind 1
  */
 // Global npm libraries
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { Container, Card, Spinner } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
@@ -20,35 +20,60 @@ function PublicRead (props) {
   const [loaded, setLoaded] = useState(false)
   const [profilePictureError, setProfilePictureError] = useState(false)
 
-  useEffect(() => {
-    // Get Last post from a author
-    const start = () => {
+  const getUserFeeds = useCallback(async () => {
+    let feeds = await new Promise((resolve) => {
+      let list = []
+      let closedRelays = 0
       const pubHexData = nip19.decode(npub)
       const pubHex = pubHexData.data
       console.log('pubhex', pubHex)
 
       const pool = RelayPool(config.nostrRelays)
+
       pool.on('open', relay => {
         relay.subscribe('subid', { limit: 5, kinds: [1], authors: [pubHex] })
-        setLoaded(true)
       })
 
       pool.on('eose', relay => {
         console.log('Closing Relay')
-        setLoaded(true)
         relay.close()
+        closedRelays++
+        // Resolve list if all relays are closed
+        if (closedRelays === config.nostrRelays.length) {
+          resolve(list)
+        }
       })
 
       pool.on('event', (relay, subId, ev) => {
         console.log('Received event:', ev)
-        setPosts(currentPosts => [...currentPosts, ev])
+        list = [...list, ev]
       })
+    })
+    console.log('feeds', feeds)
+    // Remove duplicated feeds
+    feeds = feeds.filter((val, i, list) => {
+      const existingIndex = list.findIndex(value => value.id === val.id)
+      return existingIndex === i
+    })
+
+    // Sort from newest to oldest
+    feeds.sort((a, b) => b.created_at - a.created_at)
+
+    setPosts(feeds)
+  }, [npub])
+
+  useEffect(() => {
+    // Get Last post from a author
+    const start = async () => {
+      setLoaded(true)
+      await getUserFeeds()
+      setLoaded(false)
     }
 
     if (!loaded && npub) {
       start()
     }
-  }, [bchWalletState, loaded, npub])
+  }, [bchWalletState, loaded, npub, getUserFeeds])
 
   const handleProfilePictureError = () => {
     setProfilePictureError(true)
