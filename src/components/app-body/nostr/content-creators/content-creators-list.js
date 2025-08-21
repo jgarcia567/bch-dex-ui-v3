@@ -19,7 +19,6 @@ import axios from 'axios'
 // Local libraries
 import config from '../../../../config'
 import ContentCard from './content-card'
-import { RelayPool } from 'nostr'
 
 // Global variables and constants
 const SERVER = config.dexServer
@@ -34,75 +33,12 @@ function ContentCreators (props) {
   // Get the list of profiles followed by the user.
   // It aggregates all the followers from all the relays.
   const getFollowList = useCallback(async () => {
-    const list = await new Promise((resolve, reject) => {
-      let list = []
-      let closedRelays = 0
-      const { nostrKeyPair } = appData.bchWalletState
+    const { nostrKeyPair } = appData.bchWalletState
 
-      const pool = RelayPool(config.nostrRelays)
-      // const pool = RelayPool([config.nostrRelay])
-      pool.on('open', relay => {
-        relay.subscribe('subid', { limit: 1, kinds: [3], authors: [nostrKeyPair.pubHex] })
-      })
-
-      pool.on('eose', relay => {
-        relay.close()
-        closedRelays++
-        // Resolve list if all relays are closed
-        if (closedRelays === config.nostrRelays.length) {
-          resolve(list)
-        }
-      })
-
-      pool.on('event', (relay, subId, ev) => {
-        // console.log('Received event:', ev)
-        // Merge list received from all relays
-        list = [...list, ...ev.tags]
-      })
-    })
-
-    // console.log('Follow List', list)
+    const pubKeyHex = nostrKeyPair.pubHex
+    const list = await appData.nostrQueries.getFollowList(pubKeyHex)
     setFollowList(list)
   }, [appData])
-
-  // Load profile from nostr relays
-  // It uses multiple relays. It will exit after the first successful retrieval
-  // from any relay. If one relay fails, it will move on to the next one.
-  const loadProfile = useCallback(async (pubKey) => {
-    // Looking for the profile in each relay sequentially
-    for (let i = 0; i < config.nostrRelays.length; i++) {
-      const profile = await new Promise((resolve) => {
-        const relay = config.nostrRelays[i]
-        // const pool = RelayPool(config.nostrRelays)
-        const pool = RelayPool([relay])
-        pool.on('open', relay => {
-          relay.subscribe('subid', { limit: 5, kinds: [0], authors: [pubKey] })
-        })
-
-        pool.on('eose', relay => {
-          console.log('Closing Relay')
-          relay.close()
-          resolve(false)
-        })
-
-        pool.on('event', (relay, subId, ev) => {
-          try {
-            const profile = JSON.parse(ev.content)
-            // console.log('profile', profile)
-            console.log(`Profile found  for ${pubKey} at ${relay.url}`)
-            resolve(profile)
-          } catch (error) {
-            resolve(false)
-          }
-          relay.close()
-        })
-      })
-      // Stop looking for profile if found
-      if (profile) {
-        return profile
-      }
-    }
-  }, [])
 
   useEffect(() => {
     const loadCreators = async () => {
@@ -116,7 +52,7 @@ function ContentCreators (props) {
         for (let i = 0; i < creators.length; i++) {
           try {
             const creator = creators[i]
-            const profile = await loadProfile(creator.pubkey)
+            const profile = await appData.nostrQueries.getProfile(creator.pubkey)
 
             // the folowing lines should re-render the ContentCard
             setCreators(prevCreators => {
@@ -137,7 +73,7 @@ function ContentCreators (props) {
       loadCreators()
       getFollowList()
     }
-  }, [loaded, followList, getFollowList, loadProfile])
+  }, [loaded, followList, getFollowList, appData])
 
   const filteredCreators = useCallback(() => {
     if (!creators || creators.length === 0) {

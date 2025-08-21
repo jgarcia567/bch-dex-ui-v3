@@ -4,7 +4,7 @@
  */
 
 // Global npm libraries
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Container, Button } from 'react-bootstrap'
 import CopyOnClick from '../../bch-wallet/copy-on-click.js'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -12,72 +12,33 @@ import { faUser, faGlobe } from '@fortawesome/free-solid-svg-icons'
 import * as nip19 from 'nostr-tools/nip19'
 
 // Local libraries
-import config from '../../../../config'
 import NostrFormat from '../nostr-format'
-import { RelayPool } from 'nostr'
 
 function ProfileRead (props) {
-  const { npub } = props
+  const { npub, appData } = props
   const { onProfileRead } = props
   const [profile, setProfile] = useState({})
   const [loaded, setLoaded] = useState(false)
   const [imageError, setImageError] = useState({ picture: false, banner: false })
-
-  // Load profile from nostr relays
-  // It uses multiple relays. It will exit after the first successful retrieval
-  // from any relay. If one relay fails, it will move on to the next one.
-  const fetchProfile = useCallback(async (pubKey) => {
-    console.log('fetching profile for pubkey ', pubKey)
-    // Looking for the profile in each relay sequentially
-    for (let i = 0; i < config.nostrRelays.length; i++) {
-      const profile = await new Promise((resolve) => {
-        const relay = config.nostrRelays[i]
-        // const pool = RelayPool(config.nostrRelays)
-        const pool = RelayPool([relay])
-        pool.on('open', relay => {
-          relay.subscribe('subid', { limit: 5, kinds: [0], authors: [pubKey] })
-        })
-
-        pool.on('eose', relay => {
-          console.log('Closing Relay')
-          relay.close()
-          resolve(false)
-        })
-
-        pool.on('event', (relay, subId, ev) => {
-          try {
-            const profile = JSON.parse(ev.content)
-            // console.log('profile', profile)
-            console.log(`Profile found  for ${pubKey} at ${relay.url}`)
-            resolve(profile)
-          } catch (error) {
-            resolve(false)
-          }
-          relay.close()
-        })
-      })
-      // Stop looking for profile if found
-      if (profile) {
-        return profile
-      }
-    }
-  }, [])
 
   useEffect(() => {
     const start = async () => {
       const pubHexData = nip19.decode(npub)
       const pubHex = pubHexData.data
 
-      const profile = await fetchProfile(pubHex)
-      onProfileRead(profile)
-      setProfile(profile)
+      const profile = await appData.nostrQueries.getProfile(pubHex)
+      if (profile) {
+        onProfileRead(profile)
+        setProfile(profile)
+      }
+
       setLoaded(true)
     }
 
     if (!loaded && npub) {
       start()
     }
-  }, [loaded, onProfileRead, npub, fetchProfile])
+  }, [loaded, onProfileRead, npub, appData])
 
   const handleImageError = (type) => {
     setImageError(prev => ({ ...prev, [type]: true }))
