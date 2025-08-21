@@ -12,7 +12,7 @@ import * as nip19 from 'nostr-tools/nip19'
 import { finalizeEvent } from 'nostr-tools/pure'
 import { Relay } from 'nostr-tools/relay'
 import { hexToBytes } from '@noble/hashes/utils' // already an installed dependency
-import { RelayPool } from 'nostr'
+import config from '../../../../config/index.js'
 
 // Local libraries
 import CopyOnClick from '../../bch-wallet/copy-on-click.js'
@@ -33,53 +33,19 @@ function FeedCard (props) {
   // function to fetch a post likes reaction
   const handleLikes = useCallback(async (post, userPubKey) => {
     try {
-      const psf = 'wss://nostr-relay.psfoundation.info'
-      const res = await new Promise((resolve) => {
-        let likesCnt = 0
-        let userLikedCnt = 0
-        const pool = RelayPool([psf])
-        pool.on('open', relay => {
-          relay.subscribe('subid', { kinds: [7], '#e': [post.id] })
-        })
+      // Get all post likes events
+      const likesArr = await appData.nostrQueries.getPostLikes(post.id)
+      const likesCount = likesArr.length
 
-        pool.on('eose', relay => {
-          relay.close()
-          resolve({
-            count: likesCnt,
-            userLiked: userLikedCnt > 0
-          })
-        })
-
-        pool.on('event', (relay, subId, ev) => {
-          try {
-            // Count likes
-            if (ev.content === '+') {
-              likesCnt++
-              // Count user likes
-              if (ev.pubkey === userPubKey) {
-                userLikedCnt++
-              }
-            }
-            // Count dislikes
-            if (ev.content === '-') {
-              likesCnt--
-              // Count user dislikes.
-              if (ev.pubkey === userPubKey) {
-                userLikedCnt--
-              }
-            }
-          } catch (error) {
-            // skip error
-          }
-        })
-      })
-      setLikesCount(res.count)
-      setIsLiked(res.userLiked)
+      // Verify if the users pubkey is in the likes array
+      const userLikedPost = likesArr.find(val => { return val.pubkey === userPubKey })
+      setLikesCount(likesCount)
+      setIsLiked(userLikedPost)
       setLikesFetched(true)
     } catch (error) {
       console.warn(error)
     }
-  }, [])
+  }, [appData])
 
   const handleProfilePictureError = () => {
     setProfilePictureError(true)
@@ -122,9 +88,6 @@ function FeedCard (props) {
       // Convert private key to binary
       const privateKeyBin = hexToBytes(nostrKeyPair.privHex)
 
-      // Relay list
-      const psf = 'wss://nostr-relay.psfoundation.info'
-
       // Define if like or dislike
       let content = '+'
       if (isLiked) { content = '-' }
@@ -134,27 +97,32 @@ function FeedCard (props) {
         kind: 7,
         created_at: Math.floor(Date.now() / 1000),
         tags: [
-          ['e', post.id, psf],
-          ['p', psf, nostrKeyPair.pubHex]
+          ['e', post.id],
+          ['p', nostrKeyPair.pubHex]
         ],
         content
       }
       console.log(`eventTemplate: ${JSON.stringify(eventTemplate, null, 2)}`)
 
-      // Sign the post
-      const signedEvent = finalizeEvent(eventTemplate, privateKeyBin)
-      console.log('signedEvent: ', signedEvent)
+      config.nostrRelays.map(async (relayUrl) => {
+        try {
+          // Sign the post
+          const signedEvent = finalizeEvent(eventTemplate, privateKeyBin)
+          console.log('signedEvent: ', signedEvent)
+          // Connect to a relay.
+          const relay = await Relay.connect(relayUrl)
+          console.log(`connected to ${relay.url}`)
 
-      // Connect to a relay.
-      const relay = await Relay.connect(psf)
-      console.log(`connected to ${relay.url}`)
+          // Publish the message to the relay.
+          const result = await relay.publish(signedEvent)
+          console.log('result: ', result)
 
-      // Publish the message to the relay.
-      const result = await relay.publish(signedEvent)
-      console.log('result: ', result)
-
-      // Close the connection to the relay.
-      relay.close()
+          // Close the connection to the relay.
+          relay.close()
+        } catch (err) {
+          console.warn(`Skipping publishing to ${relayUrl} due to error: ${err}`)
+        }
+      })
 
       await handleLikes(post, nostrKeyPair.pubHex)
       setLikesFetched(true)

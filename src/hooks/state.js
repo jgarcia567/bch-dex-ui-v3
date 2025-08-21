@@ -2,6 +2,7 @@ import { useState } from 'react'
 // import { useQueryParam, StringParam } from 'use-query-params'
 import useLocalStorageState from 'use-local-storage-state'
 import AppUtil from '../util'
+import NostrQueries from '../services/nostr-queries'
 
 import { useLocation } from 'react-router-dom'
 
@@ -156,7 +157,8 @@ function useAppState () {
     lastFeedTab,
     setLastFeedTab,
     isSingleView,
-    setIsSingleView
+    setIsSingleView,
+    nostrQueries: new NostrQueries()
   }
 }
 
