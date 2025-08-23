@@ -6,6 +6,7 @@
 // Global npm libraries
 import React from 'react'
 import ServerSelectView from './select-server-view'
+import RelaySelectionView from './relay-selection-view'
 
 function ConfigurationView (props) {
   const { appData } = props
@@ -13,6 +14,7 @@ function ConfigurationView (props) {
   return (
     <>
       <ServerSelectView appData={appData} />
+      <RelaySelectionView appData={appData} />
     </>
   )
 }

@@ -2,13 +2,16 @@
  *  Nostr class for query into relay pools
  *
  */
-import config from '../config'
 import { RelayPool } from 'nostr'
 import * as nip19 from 'nostr-tools/nip19'
 
 export default class NostrQueries {
-  constructor () {
-    this.relays = config.nostrRelays
+  constructor ({ relays }) {
+    this.relays = relays || []
+  }
+
+  setRelays (relays) {
+    this.relays = relays
   }
 
   npubToHex (npub) {
@@ -22,6 +25,9 @@ export default class NostrQueries {
   // from any relay. If one relay fails, it will move on to the next one.
   async getProfile (pubHex) {
     try {
+      if (this.relays.length === 0) {
+        return false
+      }
       for (let i = 0; i < this.relays.length; i++) {
         const profile = await new Promise((resolve) => {
           const relay = this.relays[i]
@@ -47,6 +53,10 @@ export default class NostrQueries {
             }
             relay.close()
           })
+          pool.on('error', (relay) => {
+            relay.close()
+            resolve(false)
+          })
         })
         // Stop looking for profile if found
         if (profile) {
@@ -61,9 +71,12 @@ export default class NostrQueries {
   // Get Feeds by user pubkey
   async getUserFeeds (pubHex) {
     try {
+      if (this.relays.length === 0) {
+        return []
+      }
       let feeds = await new Promise((resolve) => {
         let list = []
-        let closedRelays = 0
+        const closedRelays = []
 
         const pool = RelayPool(this.relays)
 
@@ -73,15 +86,26 @@ export default class NostrQueries {
 
         pool.on('eose', relay => {
           relay.close()
-          closedRelays++
+          if (!closedRelays.includes(relay)) {
+            closedRelays.push(relay)
+          }
           // Resolve list if all relays are closed
-          if (closedRelays === config.nostrRelays.length) {
+          if (closedRelays.length === this.relays.length) {
             resolve(list)
           }
         })
 
         pool.on('event', (relay, subId, ev) => {
           list = [...list, ev]
+        })
+        pool.on('error', (relay) => {
+          relay.close()
+          if (!closedRelays.includes(relay)) {
+            closedRelays.push(relay)
+          } // Resolve list if all relays are closed
+          if (closedRelays.length === this.relays.length) {
+            resolve(list)
+          }
         })
       })
       // Remove duplicated feeds
@@ -102,11 +126,15 @@ export default class NostrQueries {
   // Get global feeds
   async getGlobalFeeds () {
     try {
+      if (this.relays.length === 0) {
+        return []
+      }
+
       let feeds = await new Promise((resolve, reject) => {
         let list = []
-        let closedRelays = 0
+        const closedRelays = []
 
-        const pool = RelayPool(config.nostrRelays)
+        const pool = RelayPool(this.relays)
         // const pool = RelayPool([config.nostrRelay])
         pool.on('open', relay => {
           relay.subscribe('REQ', { limit: 10, kinds: [1], '#t': ['slpdex-socialmedia'] })
@@ -114,16 +142,28 @@ export default class NostrQueries {
 
         pool.on('eose', relay => {
           relay.close()
-          closedRelays++
+          if (!closedRelays.includes(relay)) {
+            closedRelays.push(relay)
+          }
           // Resolve list if all relays are closed
-          if (closedRelays === config.nostrRelays.length) {
+          if (closedRelays.length === this.relays.length) {
             resolve(list)
           }
         })
 
         pool.on('event', (relay, subId, ev) => {
-          // console.log('post retrieved from ', relay.url, ev.sig)
+          console.log('post retrieved from ', relay.url, ev.sig)
           list = [...list, ev]
+        })
+        pool.on('error', (relay) => {
+          relay.close()
+          if (!closedRelays.includes(relay)) {
+            closedRelays.push(relay)
+          }
+          // Resolve list if all relays are closed
+          if (closedRelays.length === this.relays.length) {
+            resolve(list)
+          }
         })
       })
 
@@ -146,11 +186,14 @@ export default class NostrQueries {
 
   // Get follow list by pubkey
   async getFollowList (pubHex) {
+    if (this.relays.length === 0) {
+      return []
+    }
     return new Promise((resolve, reject) => {
       let list = []
-      let closedRelays = 0
+      const closedRelays = []
 
-      const pool = RelayPool(config.nostrRelays)
+      const pool = RelayPool(this.relays)
       // const pool = RelayPool([config.nostrRelay])
       pool.on('open', relay => {
         relay.subscribe('subid', { limit: 1, kinds: [3], authors: [pubHex] })
@@ -158,9 +201,11 @@ export default class NostrQueries {
 
       pool.on('eose', relay => {
         relay.close()
-        closedRelays++
+        if (!closedRelays.includes(relay)) {
+          closedRelays.push(relay)
+        }
         // Resolve list if all relays are closed
-        if (closedRelays === this.relays.length) {
+        if (closedRelays.length === this.relays.length) {
           resolve(list)
         }
       })
@@ -170,15 +215,28 @@ export default class NostrQueries {
         // Merge list received from all relays
         list = [...list, ...ev.tags]
       })
+      pool.on('error', (relay) => {
+        relay.close()
+        if (!closedRelays.includes(relay)) {
+          closedRelays.push(relay)
+        }
+        // Resolve list if all relays are closed
+        if (closedRelays.length === this.relays.length) {
+          resolve(list)
+        }
+      })
     })
   }
 
   // Get event likes
   async getPostLikes (postId) {
     try {
+      if (this.relays.length === 0) {
+        return []
+      }
       let likesRes = await new Promise((resolve) => {
         const likes = []
-        let closedRelays = 0
+        const closedRelays = []
 
         const pool = RelayPool(this.relays)
         pool.on('open', relay => {
@@ -187,9 +245,11 @@ export default class NostrQueries {
 
         pool.on('eose', relay => {
           relay.close()
-          closedRelays++
+          if (!closedRelays.includes(relay)) {
+            closedRelays.push(relay)
+          }
           // Resolve list if all relays are closed
-          if (closedRelays === this.relays.length) {
+          if (closedRelays.length === this.relays.length) {
             resolve(likes)
           }
         })
@@ -202,6 +262,16 @@ export default class NostrQueries {
             }
           } catch (error) {
             // skip error
+          }
+        })
+        pool.on('error', (relay) => {
+          relay.close()
+          if (!closedRelays.includes(relay)) {
+            closedRelays.push(relay)
+          }
+          // Resolve list if all relays are closed
+          if (closedRelays.length === this.relays.length) {
+            resolve(likes)
           }
         })
       })
