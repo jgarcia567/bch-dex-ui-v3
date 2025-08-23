@@ -12,7 +12,6 @@ import * as nip19 from 'nostr-tools/nip19'
 import { finalizeEvent } from 'nostr-tools/pure'
 import { Relay } from 'nostr-tools/relay'
 import { hexToBytes } from '@noble/hashes/utils' // already an installed dependency
-import config from '../../../../config/index.js'
 
 // Local libraries
 import CopyOnClick from '../../bch-wallet/copy-on-click.js'
@@ -20,7 +19,7 @@ import NostrFormat from '../nostr-format'
 
 function FeedCard (props) {
   const { post, appData, profiles } = props
-  const { nostrKeyPair } = appData.bchWalletState
+  const { nostrKeyPair, writeRelays } = appData.bchWalletState
 
   const [profile, setProfile] = useState(profiles[post.pubkey])
 
@@ -104,7 +103,7 @@ function FeedCard (props) {
       }
       console.log(`eventTemplate: ${JSON.stringify(eventTemplate, null, 2)}`)
 
-      config.nostrRelays.map(async (relayUrl) => {
+      writeRelays.map(async (relayUrl) => {
         try {
           // Sign the post
           const signedEvent = finalizeEvent(eventTemplate, privateKeyBin)

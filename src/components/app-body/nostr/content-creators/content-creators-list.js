@@ -43,6 +43,7 @@ function ContentCreators (props) {
   useEffect(() => {
     const loadCreators = async () => {
       try {
+        console.log('loadCreators()')
         const creatorsRes = await axios.get(`${SERVER}/sm/list/all/0`)
         const creators = creatorsRes.data
         // console.log('creators', creators)
@@ -52,8 +53,9 @@ function ContentCreators (props) {
         for (let i = 0; i < creators.length; i++) {
           try {
             const creator = creators[i]
-            const profile = await appData.nostrQueries.getProfile(creator.pubkey)
-
+            const profileRes = await appData.nostrQueries.getProfile(creator.pubkey)
+            let profile = profileRes
+            if (!profileRes) profile = {}
             // the folowing lines should re-render the ContentCard
             setCreators(prevCreators => {
               const updatedCreators = [...prevCreators]
@@ -73,7 +75,7 @@ function ContentCreators (props) {
       loadCreators()
       getFollowList()
     }
-  }, [loaded, followList, getFollowList, appData])
+  }, [loaded, getFollowList, appData])
 
   const filteredCreators = useCallback(() => {
     if (!creators || creators.length === 0) {

@@ -15,14 +15,14 @@ import GetBalance from './balance'
 import Wallet from './bch-wallet'
 import Placeholder2 from './placeholder2'
 import Placeholder3 from './placeholder3'
-// import ServerSelectView from './servers/select-server-view'
+import ServerSelectView from './configuration/select-server-view.js'
 // import SelectServerButton from './servers/select-server-button'
 import NftsForSale from './nfts-for-sale'
 import BchSend from './bch-send'
 import SlpTokens from './slp-tokens'
 import SweepWif from './sweep/index.js'
 import SignMessage from './sign/index.js'
-import ServerSelectView from './configuration/select-server-view'
+import ConfigurationView from './configuration/index.js'
 import NostrPost from './nostr/nostr-post/index.js'
 import Profile from './nostr/profile/index.js'
 import Feeds from './nostr/feeds/index.js'
@@ -47,7 +47,7 @@ function AppBody (props) {
         <Route path='/servers' element={<ServerSelectView appData={appData} />} />
         <Route path='/sweep' element={<SweepWif appData={appData} />} />
         <Route path='/sign' element={<SignMessage appData={appData} />} />
-        <Route path='/configuration' element={<ServerSelectView appData={appData} />} />
+        <Route path='/configuration' element={<ConfigurationView appData={appData} />} />
         <Route path='/nostr-post' element={<NostrPost appData={appData} />} />
         <Route path='/profile/:npub' element={<Profile appData={appData} />} />
         <Route path='/feeds' element={<Feeds appData={appData} />} />
