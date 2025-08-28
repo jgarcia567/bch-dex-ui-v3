@@ -27,6 +27,8 @@ function NostrChat (props) {
   // Handle read messages
   const onMsgRead = useCallback(async (msg) => {
     try {
+      // console.log('onMsgRead() msg: ', msg)
+
       // Update messages list
       setMessages(current => {
         // ignore existing messages
@@ -51,7 +53,7 @@ function NostrChat (props) {
       // Fetch profile.
       let profile = await appData.nostrQueries.getProfile(pubKey)
       if (!profile) profile = { name: pubKey }
-      
+
       // Update profiles state
       setProfiles(currentProfiles => {
         const newProfiles = { ...currentProfiles }
@@ -79,6 +81,7 @@ function NostrChat (props) {
     pool.on('open', relay => {
       relay.subscribe('REQ', { limit: 10, kinds: [42], '#e': [selectedChannel] })
     })
+
     pool.on('eose', relay => {
       setLoadedMessages(true)
     })
@@ -87,6 +90,7 @@ function NostrChat (props) {
       console.log('post retrieved from ', relay.url, ev.content)
       onMsgRead(ev)
     })
+
     return () => {
       // Close pool on component unmount or selected channel changes
       console.log('Close existing pool')
