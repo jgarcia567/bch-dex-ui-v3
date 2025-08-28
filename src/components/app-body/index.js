@@ -29,6 +29,7 @@ import Feeds from './nostr/feeds/index.js'
 import ContentCreators from './nostr/content-creators/index.js'
 import UserDataReview from './user-data-review'
 import Offers from './offers'
+import NostrChat from './nostr-chat'
 function AppBody (props) {
   // Dependency injection through props
   const appData = props.appData
@@ -54,6 +55,7 @@ function AppBody (props) {
         <Route path='/content-creators' element={<ContentCreators appData={appData} />} />
         <Route path='/user-data/:tokenId' element={<UserDataReview appData={appData} />} />
         <Route path='/offers' element={<Offers appData={appData} />} />
+        <Route path='/nostr-chat' element={<NostrChat appData={appData} />} />
       </Routes>
       {/** Show in all paths except the servers view */}
       {/* {appData.currentPath !== '/servers' && <SelectServerButton linkTo='/servers' appData={appData} />} */}

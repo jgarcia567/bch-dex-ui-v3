@@ -302,4 +302,51 @@ export default class NostrQueries {
       console.warn(error)
     }
   }
+
+  async getChannelInfo (channelId) {
+    try {
+      if (this.relays.length === 0) {
+        return false
+      }
+      for (let i = 0; i < this.relays.length; i++) {
+        const info = await new Promise((resolve) => {
+          const relay = this.relays[i]
+          // const pool = RelayPool(config.nostrRelays)
+          const pool = RelayPool([relay])
+          pool.on('open', relay => {
+            relay.subscribe('REQ', { limit: 1, kinds: [41], '#e': [channelId] })
+          })
+
+          pool.on('eose', relay => {
+            relay.close()
+            resolve(false)
+          })
+
+          pool.on('event', (relay, subId, ev) => {
+            try {
+              const chInfo = JSON.parse(ev.content)
+              resolve(chInfo)
+            } catch (error) {
+              resolve(false)
+            }
+            relay.close()
+          })
+          pool.on('error', (relay) => {
+            relay.close()
+            resolve(false)
+          })
+        })
+        // Stop looking for profile if found
+        if (info) {
+          return info
+        }
+      }
+    } catch (error) {
+      console.warn(error)
+    }
+  }
+
+  catch (error) {
+    console.warn(error)
+  }
 }
