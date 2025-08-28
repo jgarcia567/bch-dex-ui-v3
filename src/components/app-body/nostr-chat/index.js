@@ -6,6 +6,7 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react'
 import { Container, Row, Col } from 'react-bootstrap'
 import { RelayPool } from 'nostr'
+
 // Local libraries
 import ChatSidebar from './chat-sidebar'
 import ChatMain from './chat-main'
@@ -28,12 +29,13 @@ function NostrChat (props) {
     try {
       // Update messages list
       setMessages(current => {
-        const exist = current.find(val => val.id === msg.id)
         // ignore existing messages
+        const exist = current.find(val => val.id === msg.id)
         if (exist) return current
 
         const newMsgs = [...current]
         newMsgs.push(msg)
+
         // Sort messages by timestamp
         newMsgs.sort((a, b) => b.created_at - a.created_at)
         return newMsgs.reverse()
@@ -45,9 +47,11 @@ function NostrChat (props) {
       if (existProfile) {
         return
       }
-      // Fech profile.
+
+      // Fetch profile.
       let profile = await appData.nostrQueries.getProfile(pubKey)
       if (!profile) profile = { name: pubKey }
+      
       // Update profiles state
       setProfiles(currentProfiles => {
         const newProfiles = { ...currentProfiles }
