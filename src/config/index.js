@@ -24,7 +24,7 @@ const config = {
     'wss://nos.lol',
     'wss://relay.damus.io'
   ],
-  chatsId: [ 
+  chatsId: [
     '32b0ebc01c984008977fbe476e064946990df75525331b24b37bbba5e89f4039'
   ]
 
