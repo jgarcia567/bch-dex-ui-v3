@@ -38,6 +38,7 @@ export default function ChannelItem (props) {
     >
       {chInfo?.name &&
         <div className='d-flex align-items-center'>
+          {chInfo.picture && <img src={chInfo.picture} alt={chInfo.name} style={{ width: '30px', marginRight: '5px' }} />}
           <span
             className='fw-medium'
             style={{

@@ -19,6 +19,7 @@ function NostrChat (props) {
   const [loadedMessages, setLoadedMessages] = useState(false)
   const [profiles, setProfiles] = useState({})
   const [channelsData, setChannelsData] = useState({})
+  const [channelsLoaded, setChannelsLoaded] = useState(false)
   const [channels] = useState(config.chatsId)
 
   const [selectedChannel, setSelectedChannel] = useState(config.chatsId[0])
@@ -68,7 +69,7 @@ function NostrChat (props) {
 
   // Handle nostr pool
   useEffect(() => {
-    if (!selectedChannel) return
+    if (!selectedChannel || !channelsLoaded) return
 
     const relays = nostrQueries.relays
     if (relays.length === 0) {
@@ -96,7 +97,7 @@ function NostrChat (props) {
       console.log('Close existing pool')
       pool.close()
     }
-  }, [onMsgRead, selectedChannel, nostrQueries])
+  }, [onMsgRead, selectedChannel, nostrQueries, channelsLoaded])
 
   // Load channels data
   useEffect(() => {
@@ -120,6 +121,7 @@ function NostrChat (props) {
           newChs[ch] = channelData
           return newChs
         })
+        setChannelsLoaded(true)
       }
     }
 
