@@ -37,14 +37,13 @@ function MessageList (props) {
     // Wait few seconds before load render.
     setTimeout(() => {
       if (msgContainerRef.current) {
-        console.log('scrolling')
         msgContainerRef.current.scrollTo({
           top: msgContainerRef.current.scrollHeight - msgContainerRef.current.clientHeight,
           behavior: 'smooth'
         })
         msgContainerRef.current = null // scroll one time
       }
-    }, 500)
+    }, 1000)
   }, [messages, groupMessagesByDate])
 
   return (

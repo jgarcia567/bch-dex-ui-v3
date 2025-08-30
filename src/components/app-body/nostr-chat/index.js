@@ -51,10 +51,14 @@ function NostrChat (props) {
         return
       }
 
-      // Fetch profile.
-      let profile = await appData.nostrQueries.getProfile(pubKey)
-      if (!profile) profile = { name: pubKey }
+      console.log(`Trying to get ${pubKey} profile.`)
 
+      const defaultProfile = { name: pubKey } // default profile
+      profilesRef.current[pubKey] = defaultProfile // update ref , to prevent fetch this profile again.
+      // Fetch profile
+      const nostrProfile = await appData.nostrQueries.getProfile(pubKey)
+
+      const profile = nostrProfile || defaultProfile
       // Update profiles state
       setProfiles(currentProfiles => {
         const newProfiles = { ...currentProfiles }
@@ -69,6 +73,7 @@ function NostrChat (props) {
 
   // Handle nostr pool
   useEffect(() => {
+    // fetch messages when channel selected and channel metadata are loaded
     if (!selectedChannel || !channelsLoaded) return
 
     const relays = nostrQueries.relays

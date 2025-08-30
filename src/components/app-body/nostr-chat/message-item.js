@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
 import { Spinner } from 'react-bootstrap'
+import NostrFormat from '../../app-body/nostr/nostr-format'
 
 function MessageItem (props) {
   const { message, profiles } = props
@@ -25,7 +26,7 @@ function MessageItem (props) {
     if (!profile && profiles[message.pubkey]) {
       setProfile(profiles[message.pubkey])
     }
-  }, [profiles, message])
+  }, [profiles, message, profile])
 
   return (
     <div className='mb-3 d-flex align-items-start'>
@@ -76,7 +77,8 @@ function MessageItem (props) {
             <small className='text-muted'>{formatTime(message.created_at * 1000)}</small>
           </div>
           <div style={{ lineHeight: '1.4', wordBreak: 'break-all' }}>
-            {message.content}
+            <NostrFormat content={message.content} />
+
           </div>
         </div>
       </div>
