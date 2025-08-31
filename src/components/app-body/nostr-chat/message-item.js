@@ -3,16 +3,15 @@
 */
 
 // Global npm libraries
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
+import { Spinner } from 'react-bootstrap'
 import NostrFormat from '../../app-body/nostr/nostr-format'
 
 function MessageItem (props) {
   const { message, profiles } = props
   const [profile, setProfile] = useState(null)
-
-  const msgRef = useRef(null)
 
   // Format timestamp
   const formatTime = (timestamp) => {
@@ -29,17 +28,8 @@ function MessageItem (props) {
     }
   }, [profiles, message, profile])
 
-  useEffect(() => {
-    if (msgRef.current && message.latest) {
-      msgRef.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'end'
-      })
-    }
-  }, [message])
-
   return (
-    <div className='mb-3 d-flex align-items-start' ref={msgRef}>
+    <div className='mb-3 d-flex align-items-start'>
       {/* Message Content */}
       <div className='flex-grow-1'>
         <div
@@ -81,7 +71,7 @@ function MessageItem (props) {
                     }}
                   />}
             </div>
-            {!profile && <span className='fw-bold text-dark me-2'>{message.pubkey}</span>}
+            {!profile && <span className='fw-bold text-dark me-2'>{message.pubkey}<Spinner animation='border' size='sm' /></span>}
             {profile && profile.name && <span className='fw-bold text-dark me-2'>{profile.name}</span>}
 
             <small className='text-muted'>{formatTime(message.created_at * 1000)}</small>

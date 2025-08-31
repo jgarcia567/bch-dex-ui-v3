@@ -26,9 +26,13 @@ function ChatHeader (props) {
   return (
     <div className='p-3 d-flex justify-content-between align-items-center' style={{ backgroundColor: '#ffffff' }}>
       {chInfo &&
-        <div className='flex-grow-1'>
-          <h5 className='mb-1 text-dark'>{chInfo?.name || getShortName(selectedChannel)}</h5>
-          <small className='text-muted'>{chInfo?.about || ''}</small>
+        <div className='d-flex justify-content-center align-items-center'>
+          {chInfo.picture && <img src={chInfo.picture} alt={chInfo.name} style={{ width: '50px', marginRight: '5px' }} />}
+          <div className='flex-grow-1'>
+            <h5 className='mb-1 text-dark'>{chInfo?.name || getShortName(selectedChannel)}</h5>
+            <small className='text-muted'>{chInfo?.about || ''}</small>
+          </div>
+
         </div>}
 
       {!chInfo &&

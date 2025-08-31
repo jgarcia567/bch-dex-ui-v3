@@ -19,6 +19,7 @@ function NostrChat (props) {
   const [loadedMessages, setLoadedMessages] = useState(false)
   const [profiles, setProfiles] = useState({})
   const [channelsData, setChannelsData] = useState({})
+  const [channelsLoaded, setChannelsLoaded] = useState(false)
   const [channels] = useState(config.chatsId)
 
   const [selectedChannel, setSelectedChannel] = useState(config.chatsId[0])
@@ -50,10 +51,14 @@ function NostrChat (props) {
         return
       }
 
-      // Fetch profile.
-      let profile = await appData.nostrQueries.getProfile(pubKey)
-      if (!profile) profile = { name: pubKey }
+      console.log(`Trying to get ${pubKey} profile.`)
 
+      const defaultProfile = { name: pubKey } // default profile
+      profilesRef.current[pubKey] = defaultProfile // update ref , to prevent fetch this profile again.
+      // Fetch profile
+      const nostrProfile = await appData.nostrQueries.getProfile(pubKey)
+
+      const profile = nostrProfile || defaultProfile
       // Update profiles state
       setProfiles(currentProfiles => {
         const newProfiles = { ...currentProfiles }
@@ -68,7 +73,8 @@ function NostrChat (props) {
 
   // Handle nostr pool
   useEffect(() => {
-    if (!selectedChannel) return
+    // fetch messages when channel selected and channel metadata are loaded
+    if (!selectedChannel || !channelsLoaded) return
 
     const relays = nostrQueries.relays
     if (relays.length === 0) {
@@ -96,7 +102,7 @@ function NostrChat (props) {
       console.log('Close existing pool')
       pool.close()
     }
-  }, [onMsgRead, selectedChannel, nostrQueries])
+  }, [onMsgRead, selectedChannel, nostrQueries, channelsLoaded])
 
   // Load channels data
   useEffect(() => {
@@ -120,6 +126,7 @@ function NostrChat (props) {
           newChs[ch] = channelData
           return newChs
         })
+        setChannelsLoaded(true)
       }
     }
 

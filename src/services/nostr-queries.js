@@ -54,6 +54,7 @@ export default class NostrQueries {
             relay.close()
           })
           pool.on('error', (relay) => {
+            console.log(`Error fetching ${pubHex} profile. relay connection error :${relay.url} `)
             relay.close()
             resolve(false)
           })
