@@ -20,6 +20,10 @@ export default class NostrQueries {
     return pubHex
   }
 
+  hexToNpub (hex) {
+    return nip19.npubEncode(hex)
+  }
+
   // Load profile from nostr relays
   // It uses multiple relays. It will exit after the first successful retrieval
   // from any relay. If one relay fails, it will move on to the next one.
