@@ -69,7 +69,7 @@ function MessageList (props) {
         }}
       >
         {loadedMessages && (!messages || messages.length === 0) && (
-          <div className='h-100 d-flex align-items-center justify-content-center'>
+          <div className='h-100 d-flex align-items-center justify-content-center ' style={{ minHeight: '50vh' }}>
             <div className='text-center text-muted'>
               <p>No messages yet. Start the conversation!</p>
             </div>

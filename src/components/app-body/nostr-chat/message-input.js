@@ -12,7 +12,7 @@ import { hexToBytes } from '@noble/hashes/utils' // already an installed depende
 import { Relay } from 'nostr-tools/relay'
 
 function MessageInput (props) {
-  const { appData, selectedChannel } = props
+  const { appData, selectedChannel, profiles } = props
   const { bchWalletState, writeRelays } = appData
   const [message, setMessage] = useState('')
   const [onFetch, setOnFetch] = useState(false)
@@ -82,7 +82,7 @@ function MessageInput (props) {
           <Form.Control
             as='textarea'
             rows={3}
-            placeholder='Type a message...'
+            placeholder={profiles[selectedChannel] ? 'Coming soon...' : 'Type a message...'}
             className='border-1 bg-transparent text-dark'
             style={{
               backgroundColor: '#f8f9fa',
@@ -96,7 +96,7 @@ function MessageInput (props) {
             }}
             value={message}
             onChange={onChange}
-            disabled={onFetch}
+            disabled={onFetch || profiles[selectedChannel]}
           />
 
           <Button
@@ -110,7 +110,7 @@ function MessageInput (props) {
               marginBottom: '8px'
             }}
             title='Send message'
-            disabled={onFetch}
+            disabled={onFetch || profiles[selectedChannel]}
 
           >
             <FontAwesomeIcon icon={faPaperPlane} />

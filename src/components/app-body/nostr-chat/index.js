@@ -20,7 +20,8 @@ function NostrChat (props) {
   const [profiles, setProfiles] = useState({})
   const [channelsData, setChannelsData] = useState({})
   const [channelsLoaded, setChannelsLoaded] = useState(false)
-  const [channels] = useState(config.chatsId)
+  const [groupChannels] = useState(config.chatsId)
+  const [dmChannels, setDmChannels] = useState([])
 
   const [selectedChannel, setSelectedChannel] = useState(config.chatsId[0])
   const profilesRef = useRef({})
@@ -59,6 +60,10 @@ function NostrChat (props) {
       const nostrProfile = await appData.nostrQueries.getProfile(pubKey)
 
       const profile = nostrProfile || defaultProfile
+      const npub = await appData.nostrQueries.hexToNpub(pubKey)
+      // add public key formats to profile object
+      profile.pubKey = pubKey
+      profile.npub = npub
       // Update profiles state
       setProfiles(currentProfiles => {
         const newProfiles = { ...currentProfiles }
@@ -108,8 +113,8 @@ function NostrChat (props) {
   useEffect(() => {
     const loadChData = async () => {
       const loadedChannels = []
-      for (let i = 0; i < channels.length; i++) {
-        const ch = channels[i]
+      for (let i = 0; i < groupChannels.length; i++) {
+        const ch = groupChannels[i]
 
         const exist = loadedChannels.find((val) => { return val === ch })
         if (exist) { continue }
@@ -120,7 +125,7 @@ function NostrChat (props) {
         if (!channelData) channelData = { name: ch.slice(0, 8) + '...' + ch.slice(-5) }
         loadedChannels.push(channelData)
 
-        // Update profile state
+        // Update channels data state
         setChannelsData(currentChs => {
           const newChs = { ...currentChs }
           newChs[ch] = channelData
@@ -132,14 +137,40 @@ function NostrChat (props) {
 
     // loadMessages()
     loadChData()
-  }, [selectedChannel, appData, channels])
+  }, [selectedChannel, appData, groupChannels])
+
+  const addPrivateMessage = async (profile) => {
+    try {
+      const exist = dmChannels.find(val => val === profile.pubKey)
+
+      setSelectedChannel(profile.pubKey)
+      if (exist) return
+      setDmChannels(currentChs => {
+        const newChs = [...currentChs]
+        newChs.push(profile.pubKey)
+        return newChs
+      })
+      setChannelsData(currentChs => {
+        const newChs = { ...currentChs }
+        newChs[profile.pubKey] = profile
+        return newChs
+      })
+
+      setMessages([])
+
+      // setSelectedChannel(profile.pubKey)
+    } catch (error) {
+      console.warn(error)
+    }
+  }
 
   // Reset states on change channel
   const onChangeChannel = useCallback((ch) => {
+    if (selectedChannel === ch) return
     setSelectedChannel(ch)
     setMessages([])
     setLoadedMessages(false)
-  }, [])
+  }, [selectedChannel])
 
   return (
     <>
@@ -147,7 +178,8 @@ function NostrChat (props) {
         <Row className='h-100 g-0'>
           <Col xs={12} md={4} lg={3} className='h-100'>
             <ChatSidebar
-              channels={channels}
+              groupChannels={groupChannels}
+              dmChannels={dmChannels}
               selectedChannel={selectedChannel}
               profiles={profiles}
               channelsData={channelsData}
@@ -163,6 +195,7 @@ function NostrChat (props) {
               profiles={profiles}
               channelsData={channelsData}
               onChangeChannel={onChangeChannel}
+              addPrivateMessage={addPrivateMessage}
               {...props}
             />
           </Col>
