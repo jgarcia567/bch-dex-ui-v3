@@ -11,8 +11,16 @@ import NostrFormat from '../../app-body/nostr/nostr-format'
 import ProfileMenu from './profile-menu'
 
 function MessageItem (props) {
-  const { message, profiles } = props
+  const { message, profiles, selectedChannel } = props
   const [profile, setProfile] = useState(null)
+
+  const [isDm, setIsDm] = useState(false)
+
+  // Define type between private or public
+  useEffect(() => {
+    const dmTo = profiles[selectedChannel]
+    setIsDm(!!dmTo)
+  }, [selectedChannel, profiles])
 
   // Format timestamp
   const formatTime = (timestamp) => {
@@ -24,10 +32,10 @@ function MessageItem (props) {
   }
 
   useEffect(() => {
-    if (!profile && profiles[message.pubkey]) {
+    if (profiles[message.pubkey]) {
       setProfile(profiles[message.pubkey])
     }
-  }, [profiles, message, profile])
+  }, [profiles, message])
 
   return (
     <div className='mb-3 d-flex align-items-start'>
@@ -50,6 +58,7 @@ function MessageItem (props) {
                 ? (
                   <ProfileMenu
                     profile={profile}
+                    isDm={isDm}
                     {...props}
                   >
                     <img
@@ -67,6 +76,7 @@ function MessageItem (props) {
                 : (
                   <ProfileMenu
                     profile={profile}
+                    isDm={isDm}
                     {...props}
 
                   >
@@ -89,6 +99,7 @@ function MessageItem (props) {
             {profile && profile.name && (
               <ProfileMenu
                 profile={profile}
+                isDm={isDm}
                 {...props}
               >
                 <span className='fw-bold text-dark me-2'>

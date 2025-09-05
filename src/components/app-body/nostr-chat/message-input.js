@@ -3,7 +3,7 @@
 */
 
 // Global npm libraries
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Form, Button, InputGroup } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons'
@@ -13,14 +13,80 @@ import { Relay } from 'nostr-tools/relay'
 
 function MessageInput (props) {
   const { appData, selectedChannel, profiles } = props
-  const { bchWalletState, writeRelays } = appData
+  const { bchWalletState, writeRelays, nostrQueries } = appData
+  const [isDm, setIsDm] = useState(false)
+  const [dmProfile, setDmProfile] = useState(false)
   const [message, setMessage] = useState('')
   const [onFetch, setOnFetch] = useState(false)
 
-  // Post on nostr network
-  const handleSubmit = async (e) => {
+  // Define input type between private or public
+  useEffect(() => {
+    const dmTo = profiles[selectedChannel]
+    setIsDm(!!dmTo)
+    setDmProfile(dmTo)
+  }, [selectedChannel, profiles])
+
+  const handleSubmitPrivate = async (e) => {
     e.preventDefault()
 
+    try {
+      setOnFetch(true)
+      console.log('dm To : ', dmProfile)
+
+      const { nostrKeyPair } = bchWalletState
+      // Convert private key to binary
+      const privateKeyBin = hexToBytes(nostrKeyPair.privHex)
+
+      const encryptedMsg = await nostrQueries.encryptMsg({
+        senderPrivKey: nostrKeyPair.privHex,
+        receiverPubKey: dmProfile?.pubKey,
+        message
+      })
+
+      console.log('encryptedMsg', encryptedMsg)
+      // Generate a post.
+      const eventTemplate = {
+        kind: 4,
+        created_at: Math.floor(Date.now() / 1000),
+        tags: [['p', dmProfile.pubKey]],
+        content: encryptedMsg
+      }
+      console.log(`eventTemplate: ${JSON.stringify(eventTemplate, null, 2)}`)
+
+      // Sign the post
+      const signedEvent = finalizeEvent(eventTemplate, privateKeyBin)
+      console.log('signedEvent: ', signedEvent)
+
+      // Publish the post to each relay.
+      for (let i = 0; i < writeRelays.length; i++) {
+        const relayUrl = writeRelays[i]
+
+        try {
+          // Connect to a relay.
+          const relay = await Relay.connect(relayUrl)
+          console.log(`connected to ${relay.url}`)
+
+          // Publish the message to the relay.
+          const result = await relay.publish(signedEvent)
+          console.log('result: ', result)
+
+          // Close the connection to the relay.
+          relay.close()
+        } catch (err) {
+          console.warn(`Skipping publishing to ${relayUrl} due to error: ${err}`)
+        }
+      }
+      setMessage('')
+      setOnFetch(false)
+    } catch (error) {
+      console.warn(error)
+      setOnFetch(false)
+    }
+  }
+
+  // Post on nostr network
+  const handleSubmitPublic = async (e) => {
+    e.preventDefault()
     try {
       setOnFetch(true)
 
@@ -77,12 +143,12 @@ function MessageInput (props) {
   }
   return (
     <div className='p-3' style={{ backgroundColor: '#ffffff' }}>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={isDm ? handleSubmitPrivate : handleSubmitPublic}>
         <InputGroup>
           <Form.Control
             as='textarea'
             rows={3}
-            placeholder={profiles[selectedChannel] ? 'Coming soon...' : 'Type a message...'}
+            placeholder='Type a message...'
             className='border-1 bg-transparent text-dark'
             style={{
               backgroundColor: '#f8f9fa',
@@ -96,7 +162,7 @@ function MessageInput (props) {
             }}
             value={message}
             onChange={onChange}
-            disabled={onFetch || profiles[selectedChannel]}
+            disabled={onFetch}
           />
 
           <Button
@@ -110,7 +176,7 @@ function MessageInput (props) {
               marginBottom: '8px'
             }}
             title='Send message'
-            disabled={onFetch || profiles[selectedChannel]}
+            disabled={onFetch}
 
           >
             <FontAwesomeIcon icon={faPaperPlane} />

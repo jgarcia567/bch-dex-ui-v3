@@ -4,10 +4,15 @@
  */
 import { RelayPool } from 'nostr'
 import * as nip19 from 'nostr-tools/nip19'
+import { nip04 } from 'nostr-tools'
+import { hexToBytes } from '@noble/hashes/utils' // already an installed dependency
 
 export default class NostrQueries {
   constructor ({ relays }) {
     this.relays = relays || []
+
+    this.loadedProfiles = {}
+    this.loadedChannelsInfo = {}
   }
 
   setRelays (relays) {
@@ -32,6 +37,12 @@ export default class NostrQueries {
       if (this.relays.length === 0) {
         return false
       }
+      const existingProfile = this.loadedProfiles[pubHex]
+      if (existingProfile) {
+        console.log(`Returning profile from cache :  ${existingProfile.name}`)
+        return existingProfile
+      }
+
       for (let i = 0; i < this.relays.length; i++) {
         const profile = await new Promise((resolve) => {
           const relay = this.relays[i]
@@ -65,6 +76,7 @@ export default class NostrQueries {
         })
         // Stop looking for profile if found
         if (profile) {
+          this.loadedProfiles[pubHex] = profile // Store profile
           return profile
         }
       }
@@ -313,6 +325,11 @@ export default class NostrQueries {
       if (this.relays.length === 0) {
         return false
       }
+      const existingChInfo = this.loadedChannelsInfo[channelId]
+      if (existingChInfo) {
+        console.log(`Returning ch info from cache :  ${existingChInfo.name}`)
+        return existingChInfo
+      }
       for (let i = 0; i < this.relays.length; i++) {
         const info = await new Promise((resolve) => {
           const relay = this.relays[i]
@@ -343,6 +360,7 @@ export default class NostrQueries {
         })
         // Stop looking for profile if found
         if (info) {
+          this.loadedChannelsInfo[channelId] = info
           return info
         }
       }
@@ -351,7 +369,94 @@ export default class NostrQueries {
     }
   }
 
-  catch (error) {
-    console.warn(error)
+  // Get associated pub keys from kind 04 inbox
+  async getDms (pubKey) {
+    try {
+      if (this.relays.length === 0) {
+        return []
+      }
+
+      let dms = await new Promise((resolve, reject) => {
+        let list = []
+        const closedRelays = []
+
+        const pool = RelayPool(this.relays)
+        // const pool = RelayPool([config.nostrRelay])
+        pool.on('open', relay => {
+          relay.subscribe('REQ', [
+            { limit: 100, kinds: [4], '#p': [pubKey] }, // received messages
+            { limit: 100, kinds: [4], authors: [pubKey] } // sent messages
+          ])
+        })
+
+        pool.on('eose', relay => {
+          relay.close()
+          if (!closedRelays.includes(relay)) {
+            closedRelays.push(relay)
+          }
+          // Resolve list if all relays are closed
+          if (closedRelays.length === this.relays.length) {
+            resolve(list)
+          }
+        })
+
+        pool.on('event', (relay, subId, ev) => {
+          console.log('post retrieved from ', relay.url, ev.sig)
+          if (ev.pubkey === pubKey) {
+            const pk = ev.tags[0][1]
+            list = [...list, pk]
+          } else {
+            list = [...list, ev.pubkey]
+          }
+        })
+        pool.on('error', (relay) => {
+          relay.close()
+          if (!closedRelays.includes(relay)) {
+            closedRelays.push(relay)
+          }
+          // Resolve list if all relays are closed
+          if (closedRelays.length === this.relays.length) {
+            resolve(list)
+          }
+        })
+      })
+
+      // Remove duplicated feeds
+      dms = dms.filter((val, i, list) => {
+        const existingIndex = list.findIndex(value => value === val)
+        return existingIndex === i
+      })
+
+      return dms
+    } catch (error) {
+      console.warn(error)
+    }
+  }
+
+  async encryptMsg (inObj = {}) {
+    try {
+      const { senderPrivKey, receiverPubKey, message } = inObj
+      const privateKeyBin = hexToBytes(senderPrivKey)
+      const encryptedMsg = await nip04.encrypt(privateKeyBin, receiverPubKey, message)
+      console.log('encryptedMsg', encryptedMsg)
+      return encryptedMsg
+    } catch (error) {
+      console.warn(error)
+      throw error
+    }
+  }
+
+  async decryptMsg (inObj = {}) {
+    try {
+      console.log(inObj)
+      const { receiverPrivKey, senderPubKey, encryptedMsg } = inObj
+      const privateKeyBin = hexToBytes(receiverPrivKey)
+      const decryptedMsg = await nip04.decrypt(privateKeyBin, senderPubKey, encryptedMsg)
+      console.log('decryptedMsg', decryptedMsg)
+      return decryptedMsg
+    } catch (error) {
+      console.warn(error)
+      throw error
+    }
   }
 }

@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMessage, faUser } from '@fortawesome/free-solid-svg-icons'
 
 function ProfileMenu (props) {
-  const { profile, children, addPrivateMessage } = props
+  const { profile, children, addPrivateMessage, isDm, dmListLoaded } = props
 
   const handlePrivateMessage = () => {
     addPrivateMessage(profile)
@@ -47,10 +47,12 @@ function ProfileMenu (props) {
           <Dropdown.Header className='text-muted fw-bold'>
             Profile Options
           </Dropdown.Header>
-          <Dropdown.Item onClick={handlePrivateMessage}>
-            <FontAwesomeIcon icon={faMessage} className='me-2' />
-            Private Message
-          </Dropdown.Item>
+          {!isDm && (
+            <Dropdown.Item onClick={handlePrivateMessage} disabled={!dmListLoaded}>
+              <FontAwesomeIcon icon={faMessage} className='me-2' />
+              Private Message
+            </Dropdown.Item>
+          )}
           <Dropdown.Item onClick={handleUserProfile}>
             <FontAwesomeIcon icon={faUser} className='me-2' />
             User Profile

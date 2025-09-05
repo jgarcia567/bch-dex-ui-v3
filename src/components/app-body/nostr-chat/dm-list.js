@@ -7,11 +7,12 @@ import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
 import DMItem from './dm-item'
+import { Spinner } from 'react-bootstrap'
 
 function DMList (props) {
-  const { dmChannels, profiles, selectedChannel, onChangeChannel } = props
+  const { dmChannels, profiles, selectedChannel, onChangeChannel, dmListLoaded } = props
 
-  if (dmChannels.length === 0) {
+  if (dmChannels.length === 0 && dmListLoaded) {
     return (
       <div className='text-center p-3'>
         <div className='text-muted mb-2'>
@@ -37,6 +38,11 @@ function DMList (props) {
           {...props}
         />
       ))}
+      {!dmListLoaded && (
+        <div className='text-center'>
+          <Spinner animation='border' />
+        </div>
+      )}
     </div>
   )
 }

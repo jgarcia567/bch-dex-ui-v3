@@ -3,19 +3,33 @@
 */
 
 // Global npm libraries
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
 
 export default function DMItem (props) {
   const { dm, profiles, selectedChannel, onChangeChannel } = props
   const { pubKey } = dm
-  const profile = profiles[pubKey]
+
+  const [profile, setProfile] = useState(profiles[pubKey])
   const isSelected = selectedChannel === pubKey
 
+  useEffect(() => {
+    const profile = profiles[pubKey]
+
+    if (profile) {
+      setProfile(profile)
+    }
+  }, [profiles, pubKey])
+
   const getShortName = useCallback((str) => {
-    if (str.length < 20) return str
-    return str.slice(0, 4) + '...' + str.slice(-4)
+    if (!str || !str.startsWith('npub')) return str
+
+    const prefix = 'npub'
+    const first4 = str.slice(prefix.length, prefix.length + 4)
+    const last4 = str.slice(-4)
+
+    return `${prefix}:${first4}...${last4}`
   }, [])
 
   const handleClick = () => {
@@ -84,12 +98,12 @@ export default function DMItem (props) {
         >
           {getShortName(profile?.name) || 'Unknown User'}
         </div>
-        <div
+        {/*         <div
           className={`small ${isSelected ? 'text-white-50' : 'text-muted'} ${dm.unreadCount > 0 ? 'fw-bold' : ''}`}
           style={{ fontSize: '12px' }}
         >
           No messages yet
-        </div>
+        </div> */}
       </div>
 
       {/* Unread indicator */}
