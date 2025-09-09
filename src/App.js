@@ -74,6 +74,7 @@ function App (props) {
 
       console.log('asyncInitStarted: ', appData.asyncInitStarted)
       console.log('is single view : ', singleView)
+      await appData.nostrQueries.start()
       if (!appData.asyncInitStarted && !singleView) {
         try {
           // Instantiate the async load object.
