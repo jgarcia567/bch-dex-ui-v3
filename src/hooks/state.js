@@ -21,7 +21,8 @@ function useAppState () {
       { address: 'wss://relay.damus.io', read: true, write: true }
     ],
     nftData: {},
-    lastFeedTab: 'feed'
+    lastFeedTab: 'feed',
+    dexServerUrl: config.dexServer
   }
   // Load Local storage Data
   const [lsState, setLSState, { removeItem }] = useLocalStorageState('bchWalletState-template', {
@@ -37,7 +38,7 @@ function useAppState () {
   const [wallet, setWallet] = useState(false)
   const [servers, setServers] = useState([])
   const [defaultDexServerUrl] = useState(config.dexServer) // Default dex server url
-  const [dexServerUrl, setDexServerUrl] = useState(lsState.dexServerUrl) // selected dex server url
+  const [dexServerUrl, setDexServerUrl] = useState(lsState.dexServerUrl || config.dexServer) // selected dex server url
   const [dexLib, setDexLib] = useState(false)
   const [nostr, setNostr] = useState(false)
   const [lastFeedTab, setLastFeedTab] = useState(lsState.lastFeedTab || localStorageDefault.lastFeedTab)
@@ -67,6 +68,9 @@ function useAppState () {
 
   // Nostr queries service
   const nostrQueriesRef = useRef(new NostrQueries({ relays: readRelays }))
+
+  // ProfileDM
+  const [startChannelChat, setStartChannelChat] = useState('')
 
   // The wallet state makes this a true progressive web app (PWA). As
   // balances, UTXOs, and tokens are retrieved, this state is updated.
@@ -244,8 +248,9 @@ function useAppState () {
     updateRelaysData,
     restoreRelaysData,
     readRelays,
-    writeRelays
-
+    writeRelays,
+    startChannelChat,
+    setStartChannelChat
   }
 }
 
