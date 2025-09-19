@@ -35,6 +35,8 @@ function useAppState () {
   const [hideSpinner, setHideSpinner] = useState(false)
   const [denyClose, setDenyClose] = useState(false)
 
+  const [isSingleView, setIsSingleView] = useState(false)
+
   // The wallet state makes this a true progressive web app (PWA). As
   // balances, UTXOs, and tokens are retrieved, this state is updated.
   // properties are enumerated here for the purpose of documentation.
@@ -125,7 +127,9 @@ function useAppState () {
     updateLocalStorage,
     updateBchWalletState,
     appUtil: new AppUtil(),
-    currentPath: location.pathname
+    currentPath: location.pathname,
+    setIsSingleView,
+    isSingleView
 
   }
 }
