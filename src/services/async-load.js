@@ -199,6 +199,44 @@ class AsyncLoad {
       return defaultOptions
     }
   }
+
+  // Initialize the BCH wallet without initialize() promise
+  async initStarterWallet (restURL, mnemonic, appData) {
+    try {
+      const options = {
+        interface: 'consumer-api',
+        restURL,
+        noUpdate: true
+      }
+
+      let wallet
+      if (mnemonic) {
+        // Load the wallet from the mnemonic, if it's available from local storage.
+        wallet = new this.BchWallet(mnemonic, options)
+      } else {
+        // Generate a new mnemonic and wallet.
+        wallet = new this.BchWallet(null, options)
+      }
+
+      await wallet.walletInfoPromise
+
+      const walletInfo = wallet.walletInfo
+      // Update the state of the wallet.
+      appData.updateBchWalletState({ walletObj: walletInfo, appData })
+      // Save the mnemonic to local storage.
+      if (!mnemonic) {
+        const newMnemonic = wallet.walletInfo.mnemonic
+        appData.updateLocalStorage({ mnemonic: newMnemonic })
+      }
+
+      this.wallet = wallet
+
+      return wallet
+    } catch (error) {
+      console.error('Error initStarterWallet: ', error)
+      throw error
+    }
+  }
 }
 
 function sleep (ms) {
