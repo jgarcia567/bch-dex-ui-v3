@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { Container, Row, Col, Spinner, Carousel } from 'react-bootstrap'
 import ReactMarkdown from 'react-markdown'
+import '../../App.css'
 
 function UserDataReview (props) {
   const appData = props.appData
@@ -113,7 +114,7 @@ function UserDataReview (props) {
               {/** Markdown Content */}
               {markdown
                 ? (
-                  <div className='markdown-content my-5 text-center'>
+                  <div className='markdown-content my-5'>
                     <ReactMarkdown>{markdown}</ReactMarkdown>
                   </div>
                   )
