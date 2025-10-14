@@ -36,7 +36,7 @@ function NftsForSale (props) {
   const [dataAreLoaded, setDataAreLoaded] = useState(false)
   const [currentPage, setCurrentPage] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
-  const [selectedFilter, setSelectedFilter] = useState('Art')
+  const [selectedFilter, setSelectedFilter] = useState('Misc')
 
   // Handler for previous page
   const handlePreviousPage = () => {
