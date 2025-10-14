@@ -18,6 +18,9 @@ function FilterDropdown (props) {
       </Dropdown.Toggle>
 
       <Dropdown.Menu>
+        <Dropdown.Item onClick={() => setSelectedFilter('Misc')}>
+          Misc
+        </Dropdown.Item>
         <Dropdown.Item onClick={() => setSelectedFilter('Art')}>
           Art
         </Dropdown.Item>
@@ -29,9 +32,6 @@ function FilterDropdown (props) {
         </Dropdown.Item>
         <Dropdown.Item onClick={() => setSelectedFilter('Download')}>
           Download
-        </Dropdown.Item>
-        <Dropdown.Item onClick={() => setSelectedFilter('Misc')}>
-          Misc
         </Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
