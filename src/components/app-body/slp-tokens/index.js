@@ -183,33 +183,35 @@ const SlpTokens = (props) => {
           </Col>
         </Row>
         <Row>
-          <Col xs={12} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            {/** Show spinner info if tokens are loaded but data is not loaded */
-              !backgroundDataLoaded && !backgroundDataError && (
-                <div style={{ borderRadius: '10px', backgroundColor: '#f0f0f0', padding: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', width: 'fit-content' }}>
-                  <span style={{ marginRight: '10px' }}>Loading Tokens </span>
-                  <Spinner animation='border' />
-                </div>
-              )
-            }
-            {/** Show spinner info if tokens are loaded but data is not loaded */
-              !backgroundDataError && !dataAreLoaded && tokens.length > 0 && (
-                <div style={{ borderRadius: '10px', backgroundColor: '#f0f0f0', padding: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', width: 'fit-content' }}>
-                  <span style={{ marginRight: '10px' }}>Loading Token Data </span>
-                  <Spinner animation='border' />
-                </div>
-              )
-            }
-            {/** Show spinner info if tokens are loaded but icons are not loaded */
-              backgroundDataLoaded && dataAreLoaded && !iconsAreLoaded && (
-                <div style={{ borderRadius: '10px', backgroundColor: '#f0f0f0', padding: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', width: 'fit-content' }}>
-                  <span style={{ marginRight: '10px' }}>Loading Token Icons </span>
-                  <Spinner animation='border' />
-                </div>
-              )
-            }
+          {appData.asyncInitSucceeded && (
+            <Col xs={12} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              {/** Show spinner info if tokens are loaded but data is not loaded */
+             !backgroundDataLoaded && !backgroundDataError && (
+               <div style={{ borderRadius: '10px', backgroundColor: '#f0f0f0', padding: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', width: 'fit-content' }}>
+                 <span style={{ marginRight: '10px' }}>Loading Tokens </span>
+                 <Spinner animation='border' />
+               </div>
+             )
+           }
+              {/** Show spinner info if tokens are loaded but data is not loaded */
+             !backgroundDataError && !dataAreLoaded && tokens.length > 0 && (
+               <div style={{ borderRadius: '10px', backgroundColor: '#f0f0f0', padding: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', width: 'fit-content' }}>
+                 <span style={{ marginRight: '10px' }}>Loading Token Data </span>
+                 <Spinner animation='border' />
+               </div>
+             )
+           }
+              {/** Show spinner info if tokens are loaded but icons are not loaded */
+             backgroundDataLoaded && dataAreLoaded && !iconsAreLoaded && (
+               <div style={{ borderRadius: '10px', backgroundColor: '#f0f0f0', padding: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', width: 'fit-content' }}>
+                 <span style={{ marginRight: '10px' }}>Loading Token Icons </span>
+                 <Spinner animation='border' />
+               </div>
+             )
+           }
 
-          </Col>
+            </Col>
+          )}
         </Row>
         <br />
 
