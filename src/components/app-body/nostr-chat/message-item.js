@@ -12,7 +12,7 @@ import ProfileMenu from './profile-menu'
 import AdminDeleteBtn from './delete-btn'
 
 function MessageItem (props) {
-  const { message, profiles, selectedChannel } = props
+  const { message, profiles, selectedChannel, refreshDeletedChats, deletedChats } = props
   const [profile, setProfile] = useState(null)
 
   const [isDm, setIsDm] = useState(false)
@@ -122,6 +122,8 @@ function MessageItem (props) {
                 pubkey={profile.pubKey}
                 eventId={message.id}
                 deleteType='chat'
+                refreshDeletedData={refreshDeletedChats}
+                deletedData={deletedChats}
                 {...props}
               />
             )}

@@ -16,7 +16,7 @@ import config from '../../../config'
 const SERVER = `${config.dexServer}/`
 
 function AdminDeleteBtn (props) {
-  const { appData, pubkey, npub, eventId, deleteType, deletedChats, refreshDeletedChats } = props
+  const { appData, pubkey, npub, eventId, deleteType, deletedData, refreshDeletedData } = props
   const { userData } = appData
 
   const [onFetch, setOnFetch] = useState(false)
@@ -24,11 +24,11 @@ function AdminDeleteBtn (props) {
 
   // Check if the message was already deleted
   useEffect(() => {
-    const exist = deletedChats.find(val => val.eventId === eventId)
+    const exist = deletedData.find(val => val.eventId === eventId)
     if (exist) {
       setDeleted(true)
     }
-  }, [deletedChats, eventId])
+  }, [deletedData, eventId])
 
   // REST request to handle delete
   const deleteChat = async () => {
@@ -55,7 +55,41 @@ function AdminDeleteBtn (props) {
         }
       }
       const result = await axios.request(options)
-      if (refreshDeletedChats) await refreshDeletedChats()
+      if (refreshDeletedData) await refreshDeletedData()
+      setOnFetch(false)
+      return result.data
+    } catch (err) {
+      console.warn('Error in delete() ', err)
+      setOnFetch(false)
+    }
+  }
+
+  // REST request to handle delete
+  const deletePost = async () => {
+    try {
+      setOnFetch(true)
+      let bchAddr = ''
+      try {
+        const npubToBchUrl = `${SERVER}sm/npub/${npub}`
+        const response = await axios.get(npubToBchUrl)
+        bchAddr = response.data?.bchAddr
+      } catch (error) { }
+
+      const options = {
+        method: 'POST',
+        url: `${SERVER}nostr/deletedPost`,
+        headers: {
+          Authorization: `Bearer ${userData.token}`
+        },
+        data: {
+          npub,
+          pubkey,
+          bchAddr,
+          eventId
+        }
+      }
+      const result = await axios.request(options)
+      if (refreshDeletedData) await refreshDeletedData()
       setOnFetch(false)
       return result.data
     } catch (err) {
@@ -67,6 +101,9 @@ function AdminDeleteBtn (props) {
   const submitDelete = () => {
     if (deleteType === 'chat') {
       deleteChat()
+    }
+    if (deleteType === 'post') {
+      deletePost()
     }
   }
 
