@@ -7,6 +7,9 @@ import * as nip19 from 'nostr-tools/nip19'
 import { nip04 } from 'nostr-tools'
 import { hexToBytes } from '@noble/hashes/utils' // already an installed dependency
 import axios from 'axios'
+import config from '../config'
+
+const SERVER = `${config.dexServer}/`
 
 export default class NostrQueries {
   constructor ({ relays }) {
@@ -16,11 +19,14 @@ export default class NostrQueries {
     this.loadedChannelsInfo = {}
     this.blackList = []
     this.blackListFetched = false
+
+    this.deletedChats = []
   }
 
   async start () {
     try {
       await this.getBlackList()
+      await this.fetchDeletedChats()
     } catch (error) {
       console.error('NostrQueries.start() error : ', error.message)
       throw error
@@ -503,6 +509,22 @@ export default class NostrQueries {
       return data
     } catch (error) {
       console.log('Error on getBlackList()')
+      throw error
+    }
+  }
+
+  // Get all deleted chats
+  async fetchDeletedChats () {
+    try {
+      const options = {
+        method: 'GET',
+        url: `${SERVER}nostr/deletedChat`
+      }
+      const result = await axios.request(options)
+      const { deletedChats } = result.data
+      this.deletedChats = deletedChats
+    } catch (error) {
+      console.error('Error deletedChats: ', error)
       throw error
     }
   }
