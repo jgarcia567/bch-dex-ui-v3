@@ -14,6 +14,9 @@ import { base58_to_binary as base58ToBinary } from 'base58-js'
 import { bytesToHex } from '@noble/hashes/utils' // already an installed dependency
 import { getPublicKey } from 'nostr-tools/pure'
 import * as nip19 from 'nostr-tools/nip19'
+import config from '../config'
+
+const SERVER = `${config.dexServer}/`
 
 class AsyncLoad {
   constructor () {
@@ -330,6 +333,22 @@ class AsyncLoad {
       return wallet
     } catch (error) {
       console.error('Error initStarterWallet: ', error)
+      throw error
+    }
+  }
+
+  // Get all deleted chats
+  async fetchDeletedChats () {
+    try {
+      const options = {
+        method: 'GET',
+        url: `${SERVER}nostr/deletedChat`
+      }
+      const result = await axios.request(options)
+      const { deletedChats } = result.data
+      return deletedChats
+    } catch (error) {
+      console.error('Error deletedChats: ', error)
       throw error
     }
   }
