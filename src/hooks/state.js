@@ -46,6 +46,10 @@ function useAppState () {
   const [hideSpinner, setHideSpinner] = useState(false)
   const [denyClose, setDenyClose] = useState(false)
   const [isSingleView, setIsSingleView] = useState(false)
+
+  // Deleted nostr chats.
+  const [deletedChats, setDeletedChats] = useState([])
+
   // Background process state
   const [asyncBackGroundInitState, setAsyncBackGroundInitState] = useState({
     bchInitLoaded: false, slpInitLoaded: false, asyncBackgroundFinished: false
@@ -237,7 +241,9 @@ function useAppState () {
     startChannelChat,
     setStartChannelChat,
     asyncBackGroundInitState,
-    updateBackGroundInitState
+    updateBackGroundInitState,
+    deletedChats,
+    setDeletedChats
   }
 }
 

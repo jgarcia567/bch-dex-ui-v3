@@ -12,6 +12,8 @@ import ChatSidebar from './chat-sidebar'
 import ChatMain from './chat-main'
 import config from '../../../config'
 
+// Global variables and constants
+
 function NostrChat (props) {
   const { appData } = props
   const { nostrQueries, bchWalletState, startChannelChat } = appData
@@ -27,6 +29,8 @@ function NostrChat (props) {
 
   const [selectedChannel, setSelectedChannel] = useState(null)
   const [selectedChannelIsDm, setSelectedChannelIsDm] = useState(false)
+
+  const [deletedChats] = useState(appData.deletedChats)
 
   const profilesRef = useRef({})
   const dmChannelsRef = useRef([])
@@ -182,6 +186,9 @@ function NostrChat (props) {
     // fetch messages when channel selected and channel metadata are loaded
     if (!selectedChannel || !channelsLoaded || selectedChannelIsDm) return
 
+    // wait for deleted chats
+    if (!deletedChats || !Array.isArray(deletedChats)) return
+
     // Load messages for group channel
     const relays = nostrQueries.relays
     if (relays.length === 0) {
@@ -204,7 +211,8 @@ function NostrChat (props) {
     pool.on('event', (relay, subId, ev) => {
       console.log('Group post retrieved from ', relay.url, ev.content)
       const onBlackList = nostrQueries.blackList.find((val) => { return val === ev.pubkey })
-      if (!onBlackList)onMsgRead(ev)
+      const isDeleted = deletedChats.find((val) => { return val.eventId === ev.id })
+      if (!onBlackList && !isDeleted)onMsgRead(ev)
     })
 
     return () => {
@@ -212,7 +220,7 @@ function NostrChat (props) {
       console.log('Close existing pool for group channel')
       pool.close()
     }
-  }, [onMsgRead, selectedChannel, selectedChannelIsDm, nostrQueries, channelsLoaded])
+  }, [onMsgRead, selectedChannel, selectedChannelIsDm, nostrQueries, channelsLoaded, deletedChats])
 
   // Handle nostr pool for dm channels
   useEffect(() => {
