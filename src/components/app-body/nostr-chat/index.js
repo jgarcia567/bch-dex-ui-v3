@@ -32,7 +32,7 @@ function NostrChat (props) {
   const [selectedChannel, setSelectedChannel] = useState(null)
   const [selectedChannelIsDm, setSelectedChannelIsDm] = useState(false)
 
-  const [deletedChats] = useState(appData.deletedChats)
+  const [deletedChats, setDeletedChats] = useState([])
 
   const profilesRef = useRef({})
   const dmChannelsRef = useRef([])
@@ -426,6 +426,7 @@ function NostrChat (props) {
       console.error(error)
     }
   }, [])
+
   // Get deleted chats when the component was mounted.
   useEffect(() => {
     fetchDeletedChats()
