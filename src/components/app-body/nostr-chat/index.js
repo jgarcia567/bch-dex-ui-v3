@@ -197,6 +197,10 @@ function NostrChat (props) {
     const subId = generateSubId(`group-${selectedChannel}`)
     const filter = { limit: 10, kinds: [42], '#e': [selectedChannel] }
 
+    // Track if EOSE has been called
+    let eoseCalled = false
+    let eoseTimeoutId = null
+
     const subscription = restClient.current.createSubscription(subId, filter, {
       onEvent: (ev) => {
         console.log('Group post retrieved from REST API', ev.content)
@@ -207,8 +211,17 @@ function NostrChat (props) {
         }
       },
       onEose: () => {
+        eoseCalled = true
+        if (eoseTimeoutId) {
+          clearTimeout(eoseTimeoutId)
+          eoseTimeoutId = null
+        }
         if (!selectedChannelIsDm) {
-          setLoadedMessages(true)
+          // Use setTimeout to ensure state updates from onEvent callbacks are processed
+          // before setting loadedMessages to true
+          setTimeout(() => {
+            setLoadedMessages(true)
+          }, 100)
         }
       },
       onClosed: (message) => {
@@ -221,11 +234,24 @@ function NostrChat (props) {
 
     subscriptionsRef.current[subId] = subscription
 
+    // Set up EOSE timeout fallback - if EOSE doesn't arrive within 10 seconds, set loadedMessages anyway
+    const EOSE_TIMEOUT_MS = 10000 // 10 seconds
+    eoseTimeoutId = setTimeout(() => {
+      if (!eoseCalled && !selectedChannelIsDm) {
+        console.warn(`EOSE timeout reached for subscription ${subId} - setting loadedMessages to true`)
+        setLoadedMessages(true)
+      }
+    }, EOSE_TIMEOUT_MS)
+
     // Capture values for cleanup
     const subscriptionsRefValue = subscriptionsRef.current
     const restClientValue = restClient.current
 
     return () => {
+      // Clear EOSE timeout if it exists
+      if (eoseTimeoutId) {
+        clearTimeout(eoseTimeoutId)
+      }
       // Close subscription on component unmount or selected channel changes
       console.log('Close existing subscription for group channel')
       if (subscriptionsRefValue[subId]) {
@@ -233,7 +259,11 @@ function NostrChat (props) {
         delete subscriptionsRefValue[subId]
       }
       restClientValue.closeSubscription(subId).catch(err => {
-        console.warn('Error closing subscription:', err)
+        // Subscription already closed is not an error - this is expected behavior
+        const errorMessage = err?.message || err?.toString() || ''
+        if (!errorMessage.includes('not found') && !errorMessage.includes('already closed')) {
+          console.warn('Error closing subscription:', err)
+        }
       })
     }
   }, [onMsgRead, selectedChannel, selectedChannelIsDm, nostrQueries, channelsLoaded, deletedChats])
@@ -255,6 +285,10 @@ function NostrChat (props) {
       { limit: 10, kinds: [4], '#p': [dmPubKey], authors: [nostrKeyPair.pubHex] } // sent messages
     ]
 
+    // Track if EOSE has been called
+    let eoseCalled = false
+    let eoseTimeoutId = null
+
     const subscription = restClient.current.createSubscription(subId, filters, {
       onEvent: (ev) => {
         console.log('DM post retrieved from REST API', ev.content)
@@ -268,8 +302,17 @@ function NostrChat (props) {
         }
       },
       onEose: () => {
+        eoseCalled = true
+        if (eoseTimeoutId) {
+          clearTimeout(eoseTimeoutId)
+          eoseTimeoutId = null
+        }
         if (selectedChannelIsDm) {
-          setLoadedMessages(true)
+          // Use setTimeout to ensure state updates from onEvent callbacks are processed
+          // before setting loadedMessages to true
+          setTimeout(() => {
+            setLoadedMessages(true)
+          }, 100)
         }
       },
       onClosed: (message) => {
@@ -282,11 +325,24 @@ function NostrChat (props) {
 
     subscriptionsRef.current[subId] = subscription
 
+    // Set up EOSE timeout fallback - if EOSE doesn't arrive within 10 seconds, set loadedMessages anyway
+    const EOSE_TIMEOUT_MS = 10000 // 10 seconds
+    eoseTimeoutId = setTimeout(() => {
+      if (!eoseCalled && selectedChannelIsDm) {
+        console.warn(`EOSE timeout reached for subscription ${subId} - setting loadedMessages to true`)
+        setLoadedMessages(true)
+      }
+    }, EOSE_TIMEOUT_MS)
+
     // Capture values for cleanup
     const subscriptionsRefValue = subscriptionsRef.current
     const restClientValue = restClient.current
 
     return () => {
+      // Clear EOSE timeout if it exists
+      if (eoseTimeoutId) {
+        clearTimeout(eoseTimeoutId)
+      }
       // Close subscription on component unmount or selected channel changes
       console.log('Close existing subscription for private channel')
       if (subscriptionsRefValue[subId]) {
@@ -294,7 +350,11 @@ function NostrChat (props) {
         delete subscriptionsRefValue[subId]
       }
       restClientValue.closeSubscription(subId).catch(err => {
-        console.warn('Error closing subscription:', err)
+        // Subscription already closed is not an error - this is expected behavior
+        const errorMessage = err?.message || err?.toString() || ''
+        if (!errorMessage.includes('not found') && !errorMessage.includes('already closed')) {
+          console.warn('Error closing subscription:', err)
+        }
       })
     }
   }, [onMsgRead, selectedChannel, selectedChannelIsDm, nostrQueries, bchWalletState, decryptMsg])
@@ -374,7 +434,11 @@ function NostrChat (props) {
         delete subscriptionsRefValue[subId]
       }
       restClientValue.closeSubscription(subId).catch(err => {
-        console.warn('Error closing subscription:', err)
+        // Subscription already closed is not an error - this is expected behavior
+        const errorMessage = err?.message || err?.toString() || ''
+        if (!errorMessage.includes('not found') && !errorMessage.includes('already closed')) {
+          console.warn('Error closing subscription:', err)
+        }
       })
     }
   }, [handleIncomingDms, appData, nostrQueries, dmListLoaded, channelsLoaded])
