@@ -7,6 +7,9 @@ import * as nip19 from 'nostr-tools/nip19'
 import { nip04 } from 'nostr-tools'
 import { hexToBytes } from '@noble/hashes/utils' // already an installed dependency
 import axios from 'axios'
+import config from '../config'
+
+const SERVER = `${config.dexServer}/`
 
 export default class NostrQueries {
   constructor ({ relays }) {
@@ -16,11 +19,16 @@ export default class NostrQueries {
     this.loadedChannelsInfo = {}
     this.blackList = []
     this.blackListFetched = false
+
+    this.deletedChats = []
+    this.deletedPosts = []
   }
 
   async start () {
     try {
       await this.getBlackList()
+      await this.fetchDeletedChats()
+      await this.fetchDeletedPosts()
     } catch (error) {
       console.error('NostrQueries.start() error : ', error.message)
       throw error
@@ -182,7 +190,9 @@ export default class NostrQueries {
 
         pool.on('event', (relay, subId, ev) => {
           console.log('post retrieved from ', relay.url, ev.sig)
-          list = [...list, ev]
+          const isDeleted = this.deletedPosts.find((val) => { return val.eventId === ev.id })
+
+          if (!isDeleted) list = [...list, ev]
         })
         pool.on('error', (relay) => {
           relay.close()
@@ -503,6 +513,41 @@ export default class NostrQueries {
       return data
     } catch (error) {
       console.log('Error on getBlackList()')
+      throw error
+    }
+  }
+
+  // Get all deleted chats
+  async fetchDeletedChats () {
+    try {
+      const options = {
+        method: 'GET',
+        url: `${SERVER}nostr/deletedChat`
+      }
+      const result = await axios.request(options)
+      const { deletedChats } = result.data
+      this.deletedChats = deletedChats
+    } catch (error) {
+      console.error('Error fetchDeletedChats: ', error)
+      throw error
+    }
+  }
+
+  // Get all deleted posts
+  async fetchDeletedPosts () {
+    try {
+      const options = {
+        method: 'GET',
+        url: `${SERVER}nostr/deletedPost`
+      }
+      const result = await axios.request(options)
+      console.log('result', result)
+      const { deletedPosts } = result.data
+      console.log('deletedPosts', deletedPosts)
+
+      this.deletedPosts = deletedPosts
+    } catch (error) {
+      console.error('Error fetchDeletedPosts: ', error)
       throw error
     }
   }
