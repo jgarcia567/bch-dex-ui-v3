@@ -60,8 +60,8 @@ function useAppState () {
   const [readRelays, setReadRelays] = useState(relaysData.filter(relay => relay.read).map(relay => relay.address)) // Read relays
   const [writeRelays, setWriteRelays] = useState(relaysData.filter(relay => relay.write).map(relay => relay.address)) // Write relays
 
-  // Nostr queries service
-  const nostrQueriesRef = useRef(new NostrQueries({ relays: readRelays }))
+  // Nostr queries service (REST API handles relays server-side, pass empty array for compatibility)
+  const nostrQueriesRef = useRef(new NostrQueries({ relays: [] }))
 
   // ProfileDM
   const [startChannelChat, setStartChannelChat] = useState('')
@@ -136,7 +136,7 @@ function useAppState () {
     updateLocalStorage({ nftData: allCacheData }) // Update the local storage
   }
 
-  // Update relays data
+  // Update relays data (kept for UI compatibility, REST API handles relays server-side)
   function updateRelaysData (relaysData) {
     setRelaysData(relaysData)
     updateLocalStorage({ relays: relaysData }) // Update the local storage
@@ -148,10 +148,12 @@ function useAppState () {
     const writeRelays = relaysData.filter(relay => relay.write).map(relay => relay.address)
     setWriteRelays(writeRelays)
     console.log('writeRelays: ', writeRelays)
-    nostrQueriesRef.current = new NostrQueries({ relays: readRelays })
+    // NostrQueries no longer needs relay updates (REST API handles relays server-side)
+    // Recreate instance for compatibility, but pass empty array
+    nostrQueriesRef.current = new NostrQueries({ relays: [] })
   }
 
-  // Restore relays data
+  // Restore relays data (kept for UI compatibility, REST API handles relays server-side)
   function restoreRelaysData () {
     const relaysData = [...localStorageDefault.relays] // Create a new array  in order to detect changes
     setRelaysData(relaysData)
@@ -164,7 +166,9 @@ function useAppState () {
     const writeRelays = relaysData.filter(relay => relay.write).map(relay => relay.address)
     setWriteRelays(writeRelays)
     console.log('writeRelays: ', writeRelays)
-    nostrQueriesRef.current = new NostrQueries({ relays: readRelays })
+    // NostrQueries no longer needs relay updates (REST API handles relays server-side)
+    // Recreate instance for compatibility, but pass empty array
+    nostrQueriesRef.current = new NostrQueries({ relays: [] })
   }
 
   // Update background state
