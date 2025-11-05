@@ -34,7 +34,7 @@ function NostrChat (props) {
   const [selectedChannel, setSelectedChannel] = useState(null)
   const [selectedChannelIsDm, setSelectedChannelIsDm] = useState(false)
 
-  const [deletedChats] = useState(appData.deletedChats)
+  const [deletedChats] = useState(appData.nostrQueries.deletedChats)
 
   const profilesRef = useRef({})
   const dmChannelsRef = useRef([])
