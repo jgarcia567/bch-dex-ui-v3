@@ -14,10 +14,13 @@ const config = {
   ghRepo: 'https://github.com/Permissionless-Software-Foundation/bch-dex-taker-v2',
   radicleUrl: 'https://app.radicle.network/seeds/maple.radicle.garden/rad:git:hnrkd5cjwwb5tzx37hq9uqm5ubon7ee468xcy/remotes/hyyycncbn9qzqmobnhjq9rry6t4mbjiadzjoyhaknzxjcz3cxkpfpc',
 
-  dexServer: 'https://dex-api.fullstack.cash',
-  // dexServer: 'http://localhost:5700',
+  // dexServer: 'https://dex-api.fullstack.cash',
+  dexServer: 'http://localhost:5700',
 
   nostrTopic: 'bch-dex-test-topic-02',
+  // REST API endpoint for Nostr relay interactions (primary interface)
+  nostrRestApiUrl: 'https://nostr-relay-api.psfoundation.info',
+  // Legacy relay URLs kept for reference (may be used in tags, but actual connections use REST API)
   nostrRelay: 'wss://nostr-relay.psfoundation.info',
   nostrRelays: [
     'wss://nostr-relay.psfoundation.info',

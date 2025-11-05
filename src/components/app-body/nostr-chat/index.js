@@ -5,7 +5,7 @@
 // Global npm libraries
 import React, { useCallback, useEffect, useState, useRef } from 'react'
 import { Container, Row, Col } from 'react-bootstrap'
-import { RelayPool } from 'nostr'
+import NostrRestClient, { generateSubId } from '../../../services/nostr-rest-client.js'
 
 // Local libraries
 import ChatSidebar from './chat-sidebar'
@@ -17,6 +17,10 @@ import config from '../../../config'
 function NostrChat (props) {
   const { appData } = props
   const { nostrQueries, bchWalletState, startChannelChat } = appData
+  // Initialize REST client for SSE subscriptions
+  const restClient = useRef(new NostrRestClient())
+  // Track active subscriptions for cleanup
+  const subscriptionsRef = useRef({})
 
   const [messages, setMessages] = useState([])
   const [loadedMessages, setLoadedMessages] = useState(false)
@@ -181,7 +185,7 @@ function NostrChat (props) {
     }
   }, [appData, onMsgRead])
 
-  // Handle nostr pool for group channels
+  // Handle SSE subscription for group channels
   useEffect(() => {
     // fetch messages when channel selected and channel metadata are loaded
     if (!selectedChannel || !channelsLoaded || selectedChannelIsDm) return
@@ -189,40 +193,52 @@ function NostrChat (props) {
     // wait for deleted chats
     if (!deletedChats || !Array.isArray(deletedChats)) return
 
-    // Load messages for group channel
-    const relays = nostrQueries.relays
-    if (relays.length === 0) {
-      return
-    }
+    // Create subscription for group channel messages
+    const subId = generateSubId(`group-${selectedChannel}`)
+    const filter = { limit: 10, kinds: [42], '#e': [selectedChannel] }
 
-    const pool = RelayPool(relays)
-
-    // const pool = RelayPool([config.nostrRelay])
-    pool.on('open', relay => {
-      relay.subscribe('REQ', { limit: 10, kinds: [42], '#e': [selectedChannel] })
-    })
-
-    pool.on('eose', relay => {
-      if (!selectedChannelIsDm) {
-        setLoadedMessages(true)
+    const subscription = restClient.current.createSubscription(subId, filter, {
+      onEvent: (ev) => {
+        console.log('Group post retrieved from REST API', ev.content)
+        const onBlackList = nostrQueries.blackList.find((val) => { return val === ev.pubkey })
+        const isDeleted = deletedChats.find((val) => { return val.eventId === ev.id })
+        if (!onBlackList && !isDeleted) {
+          onMsgRead(ev)
+        }
+      },
+      onEose: () => {
+        if (!selectedChannelIsDm) {
+          setLoadedMessages(true)
+        }
+      },
+      onClosed: (message) => {
+        console.log('Group channel subscription closed:', message)
+      },
+      onError: (error) => {
+        console.warn('Group channel subscription error:', error)
       }
     })
 
-    pool.on('event', (relay, subId, ev) => {
-      console.log('Group post retrieved from ', relay.url, ev.content)
-      const onBlackList = nostrQueries.blackList.find((val) => { return val === ev.pubkey })
-      const isDeleted = deletedChats.find((val) => { return val.eventId === ev.id })
-      if (!onBlackList && !isDeleted)onMsgRead(ev)
-    })
+    subscriptionsRef.current[subId] = subscription
+
+    // Capture values for cleanup
+    const subscriptionsRefValue = subscriptionsRef.current
+    const restClientValue = restClient.current
 
     return () => {
-      // Close pool on component unmount or selected channel changes
-      console.log('Close existing pool for group channel')
-      pool.close()
+      // Close subscription on component unmount or selected channel changes
+      console.log('Close existing subscription for group channel')
+      if (subscriptionsRefValue[subId]) {
+        subscriptionsRefValue[subId].close()
+        delete subscriptionsRefValue[subId]
+      }
+      restClientValue.closeSubscription(subId).catch(err => {
+        console.warn('Error closing subscription:', err)
+      })
     }
   }, [onMsgRead, selectedChannel, selectedChannelIsDm, nostrQueries, channelsLoaded, deletedChats])
 
-  // Handle nostr pool for dm channels
+  // Handle SSE subscription for dm channels
   useEffect(() => {
     // fetch messages when channel selected and channel metadata are loaded
 
@@ -231,44 +247,55 @@ function NostrChat (props) {
     const { nostrKeyPair } = bchWalletState
     const dmPubKey = selectedChannel
 
-    // Load messages for group channel
-    const relays = nostrQueries.relays
-    if (relays.length === 0) {
-      return
-    }
+    // Create subscription for DM channel messages
+    const subId = generateSubId(`dm-${dmPubKey}`)
+    // Use array of filters for multiple conditions
+    const filters = [
+      { limit: 10, kinds: [4], '#p': [nostrKeyPair.pubHex], authors: [dmPubKey] }, // received messages
+      { limit: 10, kinds: [4], '#p': [dmPubKey], authors: [nostrKeyPair.pubHex] } // sent messages
+    ]
 
-    const pool = RelayPool(relays)
-
-    // const pool = RelayPool([config.nostrRelay])
-    pool.on('open', relay => {
-      relay.subscribe('REQ', [
-        { limit: 10, kinds: [4], '#p': [nostrKeyPair.pubHex], authors: [dmPubKey] }, // received messages
-        { limit: 10, kinds: [4], '#p': [dmPubKey], authors: [nostrKeyPair.pubHex] } // sent messages
-      ])
-    })
-
-    pool.on('eose', relay => {
-      if (selectedChannelIsDm) {
-        setLoadedMessages(true)
+    const subscription = restClient.current.createSubscription(subId, filters, {
+      onEvent: (ev) => {
+        console.log('DM post retrieved from REST API', ev.content)
+        // decrypt message
+        if (ev.pubkey === nostrKeyPair.pubHex) {
+          // Sent messages
+          decryptMsg({ ev, pubKey: dmPubKey })
+        } else {
+          // Received messages
+          decryptMsg({ ev, pubKey: ev.pubkey })
+        }
+      },
+      onEose: () => {
+        if (selectedChannelIsDm) {
+          setLoadedMessages(true)
+        }
+      },
+      onClosed: (message) => {
+        console.log('DM channel subscription closed:', message)
+      },
+      onError: (error) => {
+        console.warn('DM channel subscription error:', error)
       }
     })
 
-    pool.on('event', (relay, subId, ev) => {
-      console.log('DM post retrieved from ', relay.url, ev.content)
-      // decrpt message
-      if (ev.pubkey === nostrKeyPair.pubHex) {
-        // Sent messages
-        decryptMsg({ ev, pubKey: dmPubKey })
-      } else {
-        // Received messages
-        decryptMsg({ ev, pubKey: ev.pubkey })
-      }
-    })
+    subscriptionsRef.current[subId] = subscription
+
+    // Capture values for cleanup
+    const subscriptionsRefValue = subscriptionsRef.current
+    const restClientValue = restClient.current
 
     return () => {
-      // Close pool on component unmount or selected channel changes
-      console.log('Close existing pool for private channel')
-      pool.close()
+      // Close subscription on component unmount or selected channel changes
+      console.log('Close existing subscription for private channel')
+      if (subscriptionsRefValue[subId]) {
+        subscriptionsRefValue[subId].close()
+        delete subscriptionsRefValue[subId]
+      }
+      restClientValue.closeSubscription(subId).catch(err => {
+        console.warn('Error closing subscription:', err)
+      })
     }
   }, [onMsgRead, selectedChannel, selectedChannelIsDm, nostrQueries, bchWalletState, decryptMsg])
 
@@ -307,30 +334,48 @@ function NostrChat (props) {
     }
   }, [nostrQueries, dmListLoaded])
 
-  // Keep live NPI04  for new dms
+  // Keep live subscription for new DMs
   useEffect(() => {
     if (!dmListLoaded || !channelsLoaded) return
     const { bchWalletState } = appData
     const { nostrKeyPair } = bchWalletState
-    const relays = nostrQueries.relays
 
-    const pool = RelayPool(relays)
-    // const pool = RelayPool([config.nostrRelay])
-    pool.on('open', relay => {
-      relay.subscribe('REQ', [
-        { limit: 0, kinds: [4], '#p': [nostrKeyPair.pubHex] } // received messages
-      ])
+    // Create subscription for new incoming DM notifications
+    const subId = generateSubId('dm-notify')
+    const filter = { limit: 0, kinds: [4], '#p': [nostrKeyPair.pubHex] } // received messages
+
+    const subscription = restClient.current.createSubscription(subId, filter, {
+      onEvent: (ev) => {
+        console.log('New message received from REST API', ev)
+        handleIncomingDms(ev.pubkey)
+      },
+      onEose: () => {
+        // EOSE received, subscription is active
+      },
+      onClosed: (message) => {
+        console.log('DM notification subscription closed:', message)
+      },
+      onError: (error) => {
+        console.warn('DM notification subscription error:', error)
+      }
     })
 
-    pool.on('event', (relay, subId, ev) => {
-      console.log('New message received', ev)
-      handleIncomingDms(ev.pubkey)
-    })
+    subscriptionsRef.current[subId] = subscription
+
+    // Capture values for cleanup
+    const subscriptionsRefValue = subscriptionsRef.current
+    const restClientValue = restClient.current
 
     return () => {
-      // Close pool on component unmount or selected channel changes
-      console.log('Close existing pool for private channel')
-      pool.close()
+      // Close subscription on component unmount
+      console.log('Close existing subscription for DM notifications')
+      if (subscriptionsRefValue[subId]) {
+        subscriptionsRefValue[subId].close()
+        delete subscriptionsRefValue[subId]
+      }
+      restClientValue.closeSubscription(subId).catch(err => {
+        console.warn('Error closing subscription:', err)
+      })
     }
   }, [handleIncomingDms, appData, nostrQueries, dmListLoaded, channelsLoaded])
 
