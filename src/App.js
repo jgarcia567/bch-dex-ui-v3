@@ -156,9 +156,6 @@ function App (props) {
           const nostrLib = asyncLoad.getNostrLib({ bchWallet: walletTemp })
           appData.setNostr(nostrLib)
 
-          const deletedChats = await asyncLoad.fetchDeletedChats()
-          appData.setDeletedChats(deletedChats)
-
           // Update state
           appData.setShowStartModal(false)
           appData.setDenyClose(false)
