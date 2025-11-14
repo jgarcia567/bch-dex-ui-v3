@@ -43,8 +43,10 @@ function SellerProfile (props) {
 
   // go to profile
   const goToProfile = () => {
-    const profileUrl = `${window.location.origin}/profile/${npub}#single-view`
-    window.open(profileUrl, '_blank')
+    if (npub) {
+      const profileUrl = `${window.location.origin}/profile/${npub}#single-view`
+      window.open(profileUrl, '_blank')
+    }
   }
 
   // Get display name - use profile name, npub short form, or "Anonymous User"
