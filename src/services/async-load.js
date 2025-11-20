@@ -333,6 +333,59 @@ class AsyncLoad {
       throw error
     }
   }
+
+  async getDerivatedWallet (restURL, mnemonic, hdPath = "m/44'/245'/0'/0/0", initialize = true) {
+    try {
+      const options = {
+        interface: 'consumer-api',
+        restURL,
+        noUpdate: true,
+        hdPath
+      }
+
+      const wallet = new this.BchWallet(mnemonic, options)
+
+      // Wait for wallet to initialize.
+      await wallet.walletInfoPromise
+      if (initialize) {
+        await wallet.initialize()
+      }
+
+      return wallet
+    } catch (error) {
+      console.error('Error initStarterWallet: ', error)
+      throw error
+    }
+  }
+
+  // Get buyer and counter offer data.
+  async getCounterOfferMetadata (appData) {
+    try {
+      const { bchWalletState, serverUrl } = appData
+      // Start async load lib
+      const asyncLoad = new AsyncLoad()
+      await asyncLoad.loadWalletLib()
+
+      // Buyer wallet data
+      const buyerWallet = await asyncLoad.getDerivatedWallet(serverUrl, bchWalletState.mnemonic, "m/44'/245'/0'/0/0", false)
+      const buyerAddr = buyerWallet.walletInfo.cashAddress
+      const buyerKeyPair = asyncLoad.nostrKeyPairFromWIF(buyerWallet.walletInfo.privateKey)
+      const buyerNpub = buyerKeyPair.npub
+
+      // Counter offer wallet data
+      const counterOfferWallet = await asyncLoad.getDerivatedWallet(serverUrl, bchWalletState.mnemonic, "m/44'/245'/0'/0/1", false)
+      const counterOfferAddr = counterOfferWallet.walletInfo.cashAddress
+
+      return {
+        takerAddr: buyerAddr,
+        takerNpub: buyerNpub,
+        counterOfferAddr
+      }
+    } catch (error) {
+      console.error('Error getCounterOfferMetadata()', error)
+      throw error
+    }
+  }
 }
 
 function sleep (ms) {
