@@ -8,7 +8,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { Container, Row, Col, Table, Button, Spinner } from 'react-bootstrap'
 import axios from 'axios'
 import { DatatableWrapper, TableBody, TableHeader } from 'react-bs-datatable'
-
+import AsyncLoad from '../../../services/async-load'
 // Local libraries
 import config from '../../../config'
 import WaitingModal from '../../waiting-modal'
@@ -100,9 +100,18 @@ function Offers (props) {
 
       // Generate a counter offer.
       const bchDexLib = appData.dexLib
-      const { offerData, partialHex } = await bchDexLib.take.takeOffer(
+      const { offerData, partialHex, counterOfferUtxo } = await bchDexLib.take.takeOffer(
         targetOfferEventId
       )
+
+      // Get counter offer data
+      const asyncLoad = new AsyncLoad()
+      const { takerAddr, takerNpub, counterOfferAddr } = await asyncLoad.getCounterOfferMetadata(appData)
+
+      offerData.takerAddr = takerAddr
+      offerData.takerNpub = takerNpub
+      offerData.counterOfferAddr = counterOfferAddr
+      offerData.counterOfferUtxo = counterOfferUtxo.txid
 
       // Upload the counter offer to Nostr.
       const nostr = appData.nostr
