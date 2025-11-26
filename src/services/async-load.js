@@ -15,6 +15,10 @@ import { bytesToHex } from '@noble/hashes/utils' // already an installed depende
 import { getPublicKey } from 'nostr-tools/pure'
 import * as nip19 from 'nostr-tools/nip19'
 
+import config from '../config'
+
+const SERVER = `${config.dexServer}/`
+
 class AsyncLoad {
   constructor () {
     this.BchWallet = false
@@ -383,6 +387,21 @@ class AsyncLoad {
       }
     } catch (error) {
       console.error('Error getCounterOfferMetadata()', error)
+      throw error
+    }
+  }
+
+  // Get the counter offers for a given address
+  async getCounterOffersByAddress (addr) {
+    try {
+      const options = {
+        method: 'GET',
+        url: `${SERVER}offer/list/counter-offer/${addr}`
+      }
+      const result = await axios.request(options)
+      return result.data
+    } catch (error) {
+      console.error('Error getting counter offers by address', error)
       throw error
     }
   }
