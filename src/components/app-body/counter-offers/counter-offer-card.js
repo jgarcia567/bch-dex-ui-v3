@@ -1,64 +1,79 @@
 /*
-  This Card component displays a counter offer with token icon, name, and price.
+  This Card component summarizes an SLP token.
+  if a token icon does not exist or cant be loaded , then display a default icon from Jdenticon library.
 */
 
 // Global npm libraries
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Container, Row, Col, Card, Button } from 'react-bootstrap'
 import Jdenticon from '@chris.troutner/react-jdenticon'
+// Local libraries
+import InfoButton from './info-button'
+import CancelCounterOfferBtn from './cancel-counter-offer-btn'
 
 function CounterOfferCard (props) {
-  const { offer } = props
-  const [icon, setIcon] = useState(offer.tokenIcon)
+  const { token } = props
+  const [icon, setIcon] = useState(token.icon)
+
+  // Update icon state every token.icon changes
+  useEffect(() => {
+    setIcon(token.icon)
+  }, [token.icon])
 
   return (
     <>
       <Col xs={12} sm={6} lg={4} style={{ padding: '25px' }}>
-        <Card className='shadow-sm'>
-          <Card.Body style={{ textAlign: 'center', padding: '10px' }}>
-            {/** If the icon is loaded, display it */}
-            {icon && (
-              <Card.Img
-                src={icon}
-                style={{ height: '100px', width: 'auto', margin: '0 auto' }}
-                onError={(e) => {
-                  setIcon(null) // Set the icon to null if it fails to load the image url.
-                }}
-              />
-            )}
+        <Card>
+          <Card.Body style={{ textAlign: 'center' }}>
+            {/** If the icon is loaded, display it */
+              icon && (
+                <Card.Img
+                  src={icon}
+                  style={{ height: '100px', width: 'auto' }}
+                  onError={(e) => {
+                    setIcon(null) // Set the icon to null if it fails to load the image url.
+                  }}
+                />
+              )
+            }
 
-            {/** If the icon is not loaded, display the Jdenticon */}
-            {!icon && (
-              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
-                <Jdenticon size='100' value={offer.tokenId} />
-              </div>
-            )}
-
-            <Card.Title style={{ textAlign: 'center', marginTop: '10px' }}>
-              <h4>{offer.ticker}</h4>
+            {/** If the icon is not loaded, display the Jdenticon   */
+              !icon && (
+                <Jdenticon size='100' value={token.tokenId} />
+              )
+            }
+            <Card.Title style={{ textAlign: 'center' }}>
+              <h4>{props.token.ticker}</h4>
             </Card.Title>
 
             <Container>
               <Row>
                 <Col>
-                  {/* <strong>{offer.tokenName}</strong> */}
-                  <strong>Counter Offer UTXO</strong>
+                  {props.token.name}
                 </Col>
               </Row>
               <br />
-
-              <Row>
-                {/* <Col>Price:</Col> */}
-                <Col><strong>{offer.price}</strong></Col>
-              </Row>
               <br />
 
               <Row className='text-center'>
-                <Col>
-                  <Button disabled variant='danger' size='sm'>
-                    Cancel
-                  </Button>
+                <Col xs={4}>
+                  <InfoButton token={props.token} />
                 </Col>
+                <Col xs={4}>
+                  <Button
+                    href={`/profile/${props.token.makerNpub}#single-view`}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    disabled={!props.token.makerNpub}
+                  >
+                    Seller
+                  </Button>
+
+                </Col>
+                <Col xs={4}>
+                  <CancelCounterOfferBtn token={props.token} />
+                </Col>
+
               </Row>
             </Container>
           </Card.Body>
