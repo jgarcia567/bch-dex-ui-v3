@@ -62,8 +62,8 @@ function NavMenu (props) {
               {isLoggedIn && (
                 <>
                   <NavLink
-                    className={currentPath === '/offers' ? 'nav-link-active' : 'nav-link-inactive'}
-                    to='/offers'
+                    className={currentPath === '/fungible' ? 'nav-link-active' : 'nav-link-inactive'}
+                    to='/fungible'
                     onClick={handleClickEvent}
                   >
                     Fungible Tokens
