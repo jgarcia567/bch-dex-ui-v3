@@ -6,7 +6,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Container, Row, Col, Spinner, Button } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import CounterOfferCard from './counter-offer-card'
+import OfferCard from './offer-card'
 import AsyncLoad from '../../../services/async-load'
 import { faRedo } from '@fortawesome/free-solid-svg-icons'
 // Local libraries
@@ -15,7 +15,7 @@ const Offers = (props) => {
   const { appData } = props
   const [iconsAreLoaded, setIconsAreLoaded] = useState(false)
   const [dataAreLoaded, setDataAreLoaded] = useState(false)
-  const [counterOffers, setCounterOffers] = useState([])
+  const [offers, setOffers] = useState([])
   const [isLoading, setIsLoading] = useState(true)
 
   // Get Cid from url
@@ -122,34 +122,34 @@ const Offers = (props) => {
     }
   }, [fetchTokenMutableData])
 
-  // Load the counter offers for the current wallet.
+  // Load the offers for the current wallet.
   const loadData = useCallback(async () => {
     try {
       setIsLoading(true)
-      setCounterOffers([])
+      setOffers([])
       // Get the wallet state and server url from the app data.
       const { bchWalletState, serverUrl } = appData
       // Create a new AsyncLoad instance.
       const asyncLoad = new AsyncLoad()
       // Load the wallet library.
       await asyncLoad.loadWalletLib()
-      // Get the counter offer derivated wallet
-      const counterOfferWallet = await asyncLoad.getDerivatedWallet(serverUrl, bchWalletState.mnemonic, "m/44'/245'/0'/0/2")
-      // console.log('counterOfferWallet', counterOfferWallet.walletInfo.cashAddress)
+      // Get the offer derivated wallet
+      const offerWallet = await asyncLoad.getDerivatedWallet(serverUrl, bchWalletState.mnemonic, "m/44'/245'/0'/0/2")
+      // console.log('offerWallet', offerWallet.walletInfo.cashAddress)
 
-      // Get the utxos from the counter offer wallet.
-      const tokens = await counterOfferWallet.listTokens()
+      // Get the utxos from the offer wallet.
+      const tokens = await offerWallet.listTokens()
       // console.log('tokens: ', tokens)
 
-      setCounterOffers(tokens)
+      setOffers(tokens)
       setIsLoading(false)
-      // Load the token data for the counter offers in background.
+      // Load the token data for the offers in background.
       await lazyLoadTokenData(tokens)
-      // Load the token icons for the counter offers in background.
+      // Load the token icons for the offers in background.
       await lazyLoadMutableData(tokens)
     } catch (error) {
       setIsLoading(false)
-      console.error('Error loading counter offers:', error)
+      console.error('Error loading offers:', error)
     }
   }, [appData, lazyLoadTokenData, lazyLoadMutableData])
 
@@ -164,11 +164,11 @@ const Offers = (props) => {
   }, [loadData])
   // Generate the token cards for each token in the wallet.
   const generateCards = () => {
-    return counterOffers.map(thisCounterOffer => (
-      <CounterOfferCard
+    return offers.map(thisOffer => (
+      <OfferCard
         appData={appData}
-        token={thisCounterOffer}
-        key={`${thisCounterOffer.id}`}
+        token={thisOffer}
+        key={`${thisOffer.id}`}
         refreshTokens={loadData}
       />
     ))
@@ -203,7 +203,7 @@ const Offers = (props) => {
                 )
               }
               {/** Show spinner info if tokens are loaded but data is not loaded */
-                !isLoading && !dataAreLoaded && counterOffers.length > 0 && (
+                !isLoading && !dataAreLoaded && offers.length > 0 && (
                   <div style={{ borderRadius: '10px', backgroundColor: '#f0f0f0', padding: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', width: 'fit-content' }}>
                     <span style={{ marginRight: '10px' }}>Loading Token Data </span>
                     <Spinner animation='border' />
@@ -228,7 +228,7 @@ const Offers = (props) => {
           {generateCards()}
         </Row>
         {/** Display a message if no tokens are found */}
-        {!isLoading && counterOffers.length === 0 && (
+        {!isLoading && offers.length === 0 && (
           <Row className='text-center'>
             <span> No tokens found in wallet </span>
           </Row>

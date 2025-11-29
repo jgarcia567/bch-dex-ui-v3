@@ -9,9 +9,9 @@ import { Container, Row, Col, Card } from 'react-bootstrap'
 import Jdenticon from '@chris.troutner/react-jdenticon'
 // Local libraries
 import InfoButton from './info-button'
-import CancelCounterOfferBtn from './cancel-counter-offer-btn'
+import CancelOfferBtn from './cancel-offer-btn'
 
-function CounterOfferCard (props) {
+function OfferCard (props) {
   const { token } = props
   console.log('token: ', token)
   const [icon, setIcon] = useState(token.icon)
@@ -62,7 +62,7 @@ function CounterOfferCard (props) {
                 </Col>
 
                 <Col xs={6}>
-                  <CancelCounterOfferBtn token={props.token} />
+                  <CancelOfferBtn token={props.token} />
                 </Col>
 
               </Row>
@@ -74,4 +74,4 @@ function CounterOfferCard (props) {
   )
 }
 
-export default CounterOfferCard
+export default OfferCard

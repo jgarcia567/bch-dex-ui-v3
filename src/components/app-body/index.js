@@ -32,7 +32,7 @@ import UserDataReview from './user-data-review'
 import Fungible from './fungible'
 import NostrChat from './nostr-chat'
 import CounterOffers from './counter-offers'
-import Offers from './offer'
+import Offers from './offers'
 
 function AppBody (props) {
   // Dependency injection through props

@@ -1,6 +1,6 @@
 /*
   This component renders as a button. When clicked, it opens a modal that
-  cancels the counter offer.
+  cancels the offer.
 
   This is a functional component with as little state as possible.
 */
@@ -9,7 +9,7 @@
 import React, { useState } from 'react'
 import { Button, Modal, Container } from 'react-bootstrap'
 
-function CancelCounterOfferBtn (props) {
+function CancelOfferBtn (props) {
   const [show, setShow] = useState(false)
 
   const handleClose = () => {
@@ -39,4 +39,4 @@ function CancelCounterOfferBtn (props) {
   )
 }
 
-export default CancelCounterOfferBtn
+export default CancelOfferBtn
