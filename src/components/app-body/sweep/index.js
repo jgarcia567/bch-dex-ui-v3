@@ -105,30 +105,6 @@ const SweepWif = (props) => {
     }
   }
 
-  const handleCancelCounterOffers = async () => {
-    try {
-      console.log('Executing handleCancelCounterOffers()')
-
-      // Set modal initial state
-      // setShowModal(true)
-      // setHideSpinner(false)
-      // setStatusMsg('')
-
-      // Get the keypair that holds Counter Offer UTXOs.
-      const bchDexLib = appData.dexLib
-      const keyPair = await bchDexLib.take.util.getKeyPair(1)
-      const wif = keyPair.wif
-      // console.log(`WIF: ${wif}`)
-
-      // Sweep the private key holding the Counter Offer UTXOs.
-      setWifToSweep(wif)
-
-      await handleSweep()
-    } catch (err) {
-      console.error('Error in handleCancelCounterOffers(): ', err)
-    }
-  }
-
   // Modal component
   const getModal = () => (
     <Modal show={showModal} size='lg' onHide={() => setShowModal(false)}>
@@ -207,28 +183,6 @@ const SweepWif = (props) => {
           </Col>
         </Row>
 
-        <br />
-        <br />
-        <hr />
-
-        <Row>
-          <Col>
-            <p>
-              When a Buy order is created, the coins (UTXO) to pay for it are
-              moved to a secondary address. Clicking the button below will
-              sweep those funds back into this main wallet. This will also
-              cancel/invalidate all open Counter Offers that you've created.
-            </p>
-          </Col>
-        </Row>
-
-        <Row style={{ textAlign: 'center' }}>
-          <Col>
-            <Button onClick={handleCancelCounterOffers}>
-              Sweep DEX Trading Wallet
-            </Button>
-          </Col>
-        </Row>
       </Container>
       {showModal && getModal()}
     </>
