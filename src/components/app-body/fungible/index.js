@@ -48,7 +48,7 @@ const TABLE_HEADERS = [
   }
 ]
 
-function Offers (props) {
+function Fungible (props) {
   const [appData] = useState(props.appData)
   const [offers, setOffers] = useState([])
 
@@ -237,4 +237,4 @@ function Offers (props) {
   )
 }
 
-export default Offers
+export default Fungible
