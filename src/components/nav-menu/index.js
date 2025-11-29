@@ -69,11 +69,11 @@ function NavMenu (props) {
                     Fungible Tokens
                   </NavLink>
                   <NavLink
-                    className={currentPath === '/counter-offers' ? 'nav-link-active' : 'nav-link-inactive'}
-                    to='/counter-offers'
+                    className={currentPath === '/offers' ? 'nav-link-active' : 'nav-link-inactive'}
+                    to='/offers'
                     onClick={handleClickEvent}
                   >
-                    Counter Offers
+                    Offers
                   </NavLink>
 
                   <hr />
