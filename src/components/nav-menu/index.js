@@ -76,6 +76,14 @@ function NavMenu (props) {
                     Offers
                   </NavLink>
 
+                  <NavLink
+                    className={currentPath === '/counter-offers' ? 'nav-link-active' : 'nav-link-inactive'}
+                    to='/counter-offers'
+                    onClick={handleClickEvent}
+                  >
+                    Counter Offers
+                  </NavLink>
+
                   <hr />
 
                   <NavLink
