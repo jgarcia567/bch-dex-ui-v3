@@ -15,6 +15,7 @@ function CancelCounterOfferBtn (props) {
   const [statusMsg, setStatusMsg] = useState('')
   const [hideSpinner, setHideSpinner] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
+  const [showConfirmation, setShowConfirmation] = useState(true) // show the confirmation view
 
   // Update wallet state function
   const updateWalletState = async () => {
@@ -30,8 +31,8 @@ function CancelCounterOfferBtn (props) {
     try {
       console.log('Canceling Counter Offer')
 
-      // Set modal initial state
-      setShow(true)
+      // Hide confirmation and show processing
+      setShowConfirmation(false)
       setHideSpinner(false)
       setStatusMsg('')
       setIsProcessing(true)
@@ -96,15 +97,21 @@ function CancelCounterOfferBtn (props) {
   }
 
   const handleClose = () => {
+    // Deny close if the cancel is in progress.
+    if (isProcessing) {
+      return
+    }
+
     setShow(false)
     setStatusMsg('')
     setHideSpinner(false)
     setIsProcessing(false)
+    setShowConfirmation(true) // Reset confirmation state for next time
   }
 
   const handleOpen = () => {
     setShow(true)
-    handleCancel() // Automatically start the cancel process when modal opens
+    // Don't start the cancel process immediately - wait for user confirmation
   }
 
   return (
@@ -115,24 +122,60 @@ function CancelCounterOfferBtn (props) {
           <Modal.Title>Cancel Counter Offer</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Container>
-            <Row>
-              {!hideSpinner && (
-                <Col style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                  <span style={{ marginRight: '10px' }}>Canceling Counter Offer...</span>
-                  <Spinner animation='border' />
-                </Col>
+          {showConfirmation
+            ? (
+              <Container>
+                <Row>
+                  <Col style={{ textAlign: 'center' }}>
+                    <p>Are you sure you want to cancel this Counter Offer?</p>
+                    <p style={{ color: '#666', fontSize: '0.9em' }}>
+                      This action will sweep the Counter Offer UTXOs back to your wallet.
+                    </p>
+                  </Col>
+                </Row>
+              </Container>
+              )
+            : (
+              <Container>
+                <Row>
+                  {!hideSpinner && (
+                    <Col style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                      <span style={{ marginRight: '10px' }}>Canceling Counter Offer...</span>
+                      <Spinner animation='border' />
+                    </Col>
+                  )}
+                </Row>
+                <br />
+                {statusMsg && (
+                  <Row>
+                    <Col style={{ textAlign: 'center' }}>{statusMsg}</Col>
+                  </Row>
+                )}
+              </Container>
               )}
-            </Row>
-            <br />
-            {statusMsg && (
-              <Row>
-                <Col style={{ textAlign: 'center' }}>{statusMsg}</Col>
-              </Row>
-            )}
-          </Container>
         </Modal.Body>
-        <Modal.Footer />
+        <Modal.Footer>
+          {showConfirmation && (
+            <Row style={{ width: '100%' }}>
+              <Col xs={12} className='text-center'>
+                <Button
+                  variant='secondary'
+                  style={{ minWidth: '100px', marginRight: '10px' }}
+                  onClick={handleClose}
+                >
+                  No, Keep Open
+                </Button>
+                <Button
+                  variant='danger'
+                  style={{ minWidth: '100px' }}
+                  onClick={handleCancel}
+                >
+                  Yes, Cancel It
+                </Button>
+              </Col>
+            </Row>
+          )}
+        </Modal.Footer>
       </Modal>
     </>
   )
