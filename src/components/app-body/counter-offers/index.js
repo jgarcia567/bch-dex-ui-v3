@@ -1,5 +1,5 @@
 /*
-  This component displays the offers (for sale) for the current wallet.
+  This component displays the counter offers for the current wallet.
 */
 
 // Global npm libraries
@@ -11,7 +11,7 @@ import AsyncLoad from '../../../services/async-load'
 import { faRedo } from '@fortawesome/free-solid-svg-icons'
 // Local libraries
 
-const Offers = (props) => {
+const CounterOffers = (props) => {
   const { appData } = props
   const [iconsAreLoaded, setIconsAreLoaded] = useState(false)
   const [dataAreLoaded, setDataAreLoaded] = useState(false)
@@ -134,19 +134,23 @@ const Offers = (props) => {
       // Load the wallet library.
       await asyncLoad.loadWalletLib()
       // Get the counter offer derivated wallet
-      const counterOfferWallet = await asyncLoad.getDerivatedWallet(serverUrl, bchWalletState.mnemonic, "m/44'/245'/0'/0/2")
-      // console.log('counterOfferWallet', counterOfferWallet.walletInfo.cashAddress)
-
+      const counterOfferWallet = await asyncLoad.getDerivatedWallet(serverUrl, bchWalletState.mnemonic, "m/44'/245'/0'/0/1")
       // Get the utxos from the counter offer wallet.
-      const tokens = await counterOfferWallet.listTokens()
-      // console.log('tokens: ', tokens)
+      const utxos = await counterOfferWallet.getUtxos()
+      const bchUtxos = utxos.bchUtxos
+      // Get the counter offers data for the current wallet address.
+      const { counterOffers } = await asyncLoad.getCounterOffersByAddress(bchWalletState.cashAddress)
+      // Filter the counter offers to only include the ones that are in the utxos.
+      const filteredCounterOffers = counterOffers.filter(val =>
+        bchUtxos.some(utxo => utxo.txid === val.counterOfferUtxo)
+      )
 
-      setCounterOffers(tokens)
+      setCounterOffers(filteredCounterOffers)
       setIsLoading(false)
       // Load the token data for the counter offers in background.
-      await lazyLoadTokenData(tokens)
+      await lazyLoadTokenData(filteredCounterOffers)
       // Load the token icons for the counter offers in background.
-      await lazyLoadMutableData(tokens)
+      await lazyLoadMutableData(filteredCounterOffers)
     } catch (error) {
       setIsLoading(false)
       console.error('Error loading counter offers:', error)
@@ -197,7 +201,7 @@ const Offers = (props) => {
               {/** Show spinner info if tokens are loaded but data is not loaded */
                 isLoading && (
                   <div style={{ borderRadius: '10px', backgroundColor: '#f0f0f0', padding: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', width: 'fit-content' }}>
-                    <span style={{ marginRight: '10px' }}>Loading Offers </span>
+                    <span style={{ marginRight: '10px' }}>Loading Counter Offers </span>
                     <Spinner animation='border' />
                   </div>
                 )
@@ -239,4 +243,4 @@ const Offers = (props) => {
   )
 }
 
-export default Offers
+export default CounterOffers
