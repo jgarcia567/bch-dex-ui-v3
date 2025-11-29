@@ -333,6 +333,31 @@ class AsyncLoad {
       throw error
     }
   }
+
+  // Get the derivated wallet from the mnemonic and hd path
+  async getDerivatedWallet (restURL, mnemonic, hdPath = "m/44'/245'/0'/0/0", initialize = true) {
+    try {
+      const options = {
+        interface: 'consumer-api',
+        restURL,
+        noUpdate: true,
+        hdPath
+      }
+
+      const wallet = new this.BchWallet(mnemonic, options)
+
+      // Wait for wallet to initialize.
+      await wallet.walletInfoPromise
+      if (initialize) {
+        await wallet.initialize()
+      }
+
+      return wallet
+    } catch (error) {
+      console.error('Error initStarterWallet: ', error)
+      throw error
+    }
+  }
 }
 
 function sleep (ms) {

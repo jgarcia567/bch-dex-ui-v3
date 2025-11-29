@@ -29,8 +29,10 @@ import Profile from './nostr/profile/index.js'
 import Feeds from './nostr/feeds/index.js'
 import ContentCreators from './nostr/content-creators/index.js'
 import UserDataReview from './user-data-review'
-import Offers from './offers'
+import Offers from './fungible'
 import NostrChat from './nostr-chat'
+import CounterOffers from './offers'
+
 function AppBody (props) {
   // Dependency injection through props
   const appData = props.appData
@@ -56,7 +58,8 @@ function AppBody (props) {
         <Route path='/feeds' element={<Feeds appData={appData} />} />
         <Route path='/content-creators' element={<ContentCreators appData={appData} />} />
         <Route path='/user-data/:tokenId' element={<UserDataReview appData={appData} />} />
-        <Route path='/offers' element={<Offers appData={appData} />} />
+        <Route path='/fungible' element={<Offers appData={appData} />} />
+        <Route path='/offers' element={<CounterOffers appData={appData} />} />
         <Route path='/nostr-chat' element={<NostrChat appData={appData} />} />
       </Routes>
       {/** Show in all paths except the servers view */}

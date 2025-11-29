@@ -1,231 +1,242 @@
 /*
-  This React components downloads the active Offers from the REST API and
-  displays them in a data table.
+  This component displays the counter offers for the current wallet.
 */
 
 // Global npm libraries
 import React, { useState, useEffect, useCallback } from 'react'
-import { Container, Row, Col, Table, Button, Spinner } from 'react-bootstrap'
-import axios from 'axios'
-import { DatatableWrapper, TableBody, TableHeader } from 'react-bs-datatable'
-
+import { Container, Row, Col, Spinner, Button } from 'react-bootstrap'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import CounterOfferCard from './counter-offer-card'
+import AsyncLoad from '../../../services/async-load'
+import { faRedo } from '@fortawesome/free-solid-svg-icons'
 // Local libraries
-import config from '../../../config'
-import WaitingModal from '../../waiting-modal'
 
-// Global variables and constants
-const SERVER = `${config.dexServer}/`
+const CounterOffers = (props) => {
+  const { appData } = props
+  const [iconsAreLoaded, setIconsAreLoaded] = useState(false)
+  const [dataAreLoaded, setDataAreLoaded] = useState(false)
+  const [counterOffers, setCounterOffers] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
 
-const TABLE_HEADERS = [
-  {
-    prop: 'ticker',
-    title: 'Ticker',
-    isFilterable: true
-  },
-  {
-    prop: 'tokenId',
-    title: 'Token ID'
-  },
-  {
-    prop: 'buyOrSell',
-    title: 'Type'
-  },
-  {
-    prop: 'smallNostrEventId',
-    title: 'Event ID'
-  },
-  {
-    prop: 'numTokens',
-    title: 'Quantity'
-  },
-  {
-    prop: 'usdPrice',
-    title: 'Price (USD)'
-  },
-  {
-    prop: 'button',
-    title: 'Action'
-  }
-]
-
-function Offers (props) {
-  const [appData] = useState(props.appData)
-  const [offers, setOffers] = useState([])
-
-  // Modal state
-  const [showModal, setShowModal] = useState(false)
-  const [modalBody, setModalBody] = useState([])
-  const [hideSpinner, setHideSpinner] = useState(false)
-  const [denyClose, setDenyClose] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-
-  // Given a large string, it will return a string with the first and last
-  // four characters.
-  const cutString = (str) => {
-    try {
-      const subTxid = str.slice(0, 4)
-      const subTxid2 = str.slice(-4)
-      return `${subTxid}...${subTxid2}`
-    } catch (err) {
-      console.warn('Error in cutString() ', err)
+  // Get Cid from url
+  const parseCid = (url) => {
+    // get the cid from the url format 'ipfs://bafybeicem27xbzs65uvbcgykcmscsgln3lmhbfrcoec3gdttkdgtxv5acq
+    if (url && url.includes('ipfs://')) {
+      const cid = url.split('ipfs://')[1]
+      return cid
     }
+    return url
   }
 
-  // REST request to get data from avax-dex
-  const getOffers = async () => {
+  //  This function loads the token data .
+  const lazyLoadTokenData = useCallback(async (tokens) => {
     try {
-      const options = {
-        method: 'GET',
-        url: `${SERVER}offer/list/fungible/0`,
-        data: {}
+      setDataAreLoaded(false)
+      // map each token and fetch the token data
+      for (let i = 0; i < tokens.length; i++) {
+        const thisToken = tokens[i]
+
+        // data does not  need to be downloaded, so continue with the next one
+        if (thisToken.dataAlreadyDownloaded) continue
+
+        // Try to get token data.
+        const tokenData = await appData.wallet.getTokenData(thisToken.tokenId)
+        console.log('tokenData', tokenData)
+        if (tokenData) {
+          // Set data to the token object , this can be used to display the token name in the token card component.
+          thisToken.tokenData = tokenData
+          thisToken.tokenId = tokenData.genesisData.tokenId
+          thisToken.ticker = tokenData.genesisData.ticker
+          thisToken.name = tokenData.genesisData.name
+          thisToken.decimals = tokenData.genesisData.decimals
+          thisToken.tokenType = tokenData.genesisData.type
+          thisToken.url = tokenData.genesisData.documentUri
+        }
+
+        // Mark token to prevent fetch token data again.
+        thisToken.dataAlreadyDownloaded = true
       }
-      const result = await axios.request(options)
-      return result.data
-    } catch (err) {
-      console.warn('Error in getOffers() ', err)
-    }
-  }
-  const handleBuy = useCallback(async (event) => {
-    try {
-      console.log('Buy button clicked. Event: ', event)
 
-      const targetOfferEventId = event.target.id
-      console.log('targetOfferEventId: ', targetOfferEventId)
-
-      // Initialize modal
-      setShowModal(true)
-      setModalBody(['Generating Counter Offer...', '(This can take a couple minutes)'])
-      setHideSpinner(false)
-      setDenyClose(true)
-
-      // Generate a counter offer.
-      const bchDexLib = appData.dexLib
-      const { offerData, partialHex } = await bchDexLib.take.takeOffer(
-        targetOfferEventId
-      )
-
-      // Upload the counter offer to Nostr.
-      const nostr = appData.nostr
-      const { eventId, noteId } = await nostr.testNostrUpload({
-        offerData,
-        partialHex
-      })
-
-      console.log('eventId: ', eventId)
-      console.log('noteId: ', noteId)
-
-      // update output modal
-      const newModalBody = []
-      newModalBody.push('Success!')
-      newModalBody.push('What happens next:')
-      newModalBody.push('The money has not yet left your wallet! It is still under your control.')
-      newModalBody.push('If the sellers node is online, they will accept the Counter Offer you just generated in a few minutes.')
-      newModalBody.push('If the tokens never show up, you can sweep the funds back into your wallet.')
-
-      setModalBody(newModalBody)
-      setHideSpinner(true)
-      setDenyClose(false)
+      setDataAreLoaded(true)
     } catch (error) {
-      console.warn('Error in handleBuy() ', error)
-      setModalBody(['Buy failed: ', error.message])
-      setHideSpinner(true)
-      setDenyClose(false)
+      setDataAreLoaded(true)
     }
-  }, [appData]) // Dependencies: appData since it's used inside the callback
+  }, [appData])
 
-  // Get Offer data and manipulate it for the sake of presentation.
-  const handleOffers = useCallback(async () => {
-    setIsLoading(true)
-    // Get raw offer data.
-    const offerRawData = await getOffers()
-    console.log('offerRawData: ', offerRawData)
-    if (!offerRawData || offerRawData.length === 0) {
+  // Fetch mutable data if it exist and get the token icon url
+  const fetchTokenMutableData = useCallback(async (token) => {
+    try {
+      // Get the token data
+      const tokenData = token.tokenData
+
+      if (!tokenData.mutableData) return false // Return false if no mutable data
+
+      // Get the token icon from the mutable data
+      const cid = parseCid(tokenData.mutableData)
+      console.log('mutable data cid', cid)
+
+      const { json } = await appData.wallet.cid2json({ cid })
+      console.log('json: ', json)
+      if (!json) return false
+
+      let iconUrl = json.tokenIcon
+
+      if (json.fullSizedUrl && json.fullSizedUrl.includes('http')) {
+        iconUrl = json.fullSizedUrl
+      }
+      const userData = json.userData
+      // Return icon url
+      return { iconUrl, userData }
+    } catch (error) {
+      return false
+    }
+  }, [appData])
+
+  //  This function loads the token icons from the ipfs gateways.
+  const lazyLoadMutableData = useCallback(async (tokens) => {
+    try {
+      setIconsAreLoaded(false)
+      // map each token and fetch the icon url
+      for (let i = 0; i < tokens.length; i++) {
+        const thisToken = tokens[i]
+
+        // Incon does not  need to be downloaded, so continue with the next one
+        if (thisToken.iconAlreadyDownloaded) continue
+
+        // Try to get token icon url from mutable data.
+        const { iconUrl, userData } = await fetchTokenMutableData(thisToken)
+        console.log('iconUrl', iconUrl)
+        if (iconUrl) {
+          // Set the icon url to the token , this can be used to display the icon in the token card component.
+          thisToken.icon = iconUrl
+          thisToken.userData = userData
+        }
+
+        // Mark token to prevent fetch token icon again.
+        thisToken.iconAlreadyDownloaded = true
+      }
+
+      setIconsAreLoaded(true)
+    } catch (error) {
+      setIconsAreLoaded(true)
+    }
+  }, [fetchTokenMutableData])
+
+  // Load the counter offers for the current wallet.
+  const loadData = useCallback(async () => {
+    try {
+      setIsLoading(true)
+      setCounterOffers([])
+      // Get the wallet state and server url from the app data.
+      const { bchWalletState, serverUrl } = appData
+      // Create a new AsyncLoad instance.
+      const asyncLoad = new AsyncLoad()
+      // Load the wallet library.
+      await asyncLoad.loadWalletLib()
+      // Get the counter offer derivated wallet
+      const counterOfferWallet = await asyncLoad.getDerivatedWallet(serverUrl, bchWalletState.mnemonic, "m/44'/245'/0'/0/2")
+      // console.log('counterOfferWallet', counterOfferWallet.walletInfo.cashAddress)
+
+      // Get the utxos from the counter offer wallet.
+      const tokens = await counterOfferWallet.listTokens()
+      // console.log('tokens: ', tokens)
+
+      setCounterOffers(tokens)
       setIsLoading(false)
-      setOffers([])
-      return
+      // Load the token data for the counter offers in background.
+      await lazyLoadTokenData(tokens)
+      // Load the token icons for the counter offers in background.
+      await lazyLoadMutableData(tokens)
+    } catch (error) {
+      setIsLoading(false)
+      console.error('Error loading counter offers:', error)
     }
-    // Formatted Data
-    const formattedOffers = []
+  }, [appData, lazyLoadTokenData, lazyLoadMutableData])
 
-    for (let i = 0; i < offerRawData.length; i++) {
-      const thisOffer = offerRawData[i]
-
-      // Get and format the token ID
-      const tokenId = thisOffer.tokenId
-      const smallTokenId = cutString(tokenId)
-      thisOffer.tokenId = (<a href={`https://token.fullstack.cash/?tokenid=${tokenId}`} target='_blank' rel='noreferrer'>{smallTokenId}</a>)
-
-      // Get and format the P2WDB ID
-      const nostrEventId = thisOffer.nostrEventId
-      const smallNostrEventId = cutString(nostrEventId)
-      thisOffer.smallNostrEventId = smallNostrEventId
-      thisOffer.button = (<Button text='Buy' variant='success' size='lg' id={nostrEventId} onClick={handleBuy}>Buy</Button>)
-
-      // thisOffer.p2wdbHash = (<a href={`https://p2wdb.fullstack.cash/entry/hash/${p2wdbHash}`} target='_blank' rel='noreferrer'>{smallP2wdbHash}</a>)
-
-      // Convert sats to BCH, and then calculate cost in USD.
-      const bchjs = appData.wallet.bchjs
-      const rateInSats = parseInt(thisOffer.rateInBaseUnit)
-      const bchCost = bchjs.BitcoinCash.toBitcoinCash(rateInSats)
-      const usdPrice = bchCost * appData.bchWalletState.bchUsdPrice
-      const priceStr = `$${usdPrice.toFixed(3)}`
-      thisOffer.usdPrice = priceStr
-
-      formattedOffers.push(thisOffer)
-    }
-
-    setOffers(formattedOffers)
-    setIsLoading(false)
-  }, [appData, handleBuy])
-
+  // Start to load the token icons when the component is mounted
   useEffect(() => {
-    // Retrieve initial offer data
-    handleOffers()
+    loadData()
+  }, [loadData])
 
-    // Get data and update the table periodically.
-    const interval = setInterval(() => {
-      handleOffers()
-    }, 30000)
-
-    // Cleanup interval on component unmount
-    return () => clearInterval(interval)
-  }, [handleOffers]) // Empty dependency array means this effect runs once on mount
-
-  const heading = 'Generating Counter Offer...'
+  // Handler for refresh button
+  const handleRefresh = useCallback(() => {
+    loadData()
+  }, [loadData])
+  // Generate the token cards for each token in the wallet.
+  const generateCards = () => {
+    return counterOffers.map(thisCounterOffer => (
+      <CounterOfferCard
+        appData={appData}
+        token={thisCounterOffer}
+        key={`${thisCounterOffer.id}`}
+        refreshTokens={loadData}
+      />
+    ))
+  }
 
   return (
     <>
-      {showModal && (
-        <WaitingModal
-          heading={heading}
-          body={modalBody}
-          hideSpinner={hideSpinner}
-          denyClose={denyClose}
-        />
-      )}
       <Container>
         <Row>
-          <Col className='text-break' style={{ textAlign: 'center' }}>
+          <Col xs={6} style={{ textAlign: 'start' }}>
             {!isLoading && (
-              <DatatableWrapper body={offers} headers={TABLE_HEADERS}>
-                <Table>
-                  <TableHeader />
-                  <TableBody />
-                </Table>
-              </DatatableWrapper>
+              <Row>
+                <Col xs={6}>
+                  <Button variant='success' onClick={handleRefresh}>
+                    <FontAwesomeIcon icon={faRedo} size='lg' /> Refresh
+                  </Button>
+                </Col>
+              </Row>
             )}
           </Col>
         </Row>
-        {isLoading && (
-          <Row>
-            <Col className='text-break' style={{ textAlign: 'center' }}>
-              <Spinner animation='border' />
+        <Row>
+          {appData.asyncInitSucceeded && (
+
+            <Col xs={12} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              {/** Show spinner info if tokens are loaded but data is not loaded */
+                isLoading && (
+                  <div style={{ borderRadius: '10px', backgroundColor: '#f0f0f0', padding: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', width: 'fit-content' }}>
+                    <span style={{ marginRight: '10px' }}>Loading Counter Offers </span>
+                    <Spinner animation='border' />
+                  </div>
+                )
+              }
+              {/** Show spinner info if tokens are loaded but data is not loaded */
+                !isLoading && !dataAreLoaded && counterOffers.length > 0 && (
+                  <div style={{ borderRadius: '10px', backgroundColor: '#f0f0f0', padding: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', width: 'fit-content' }}>
+                    <span style={{ marginRight: '10px' }}>Loading Token Data </span>
+                    <Spinner animation='border' />
+                  </div>
+                )
+              }
+              {/** Show spinner info if tokens are loaded but icons are not loaded */
+                !isLoading && dataAreLoaded && !iconsAreLoaded && (
+                  <div style={{ borderRadius: '10px', backgroundColor: '#f0f0f0', padding: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', width: 'fit-content' }}>
+                    <span style={{ marginRight: '10px' }}>Loading Token Icons </span>
+                    <Spinner animation='border' />
+                  </div>
+                )
+              }
+
             </Col>
+          )}
+        </Row>
+        <br />
+
+        <Row>
+          {generateCards()}
+        </Row>
+        {/** Display a message if no tokens are found */}
+        {!isLoading && counterOffers.length === 0 && (
+          <Row className='text-center'>
+            <span> No tokens found in wallet </span>
           </Row>
         )}
+
       </Container>
     </>
   )
 }
 
-export default Offers
+export default CounterOffers
